@@ -6,9 +6,9 @@ except Exception:
                     "you will need to install the tar.gz version of PyCrypto "
                     "-- the pip version doesn't work with GAE")
 from hashlib import sha256
-import json, base64
-import urllib, requests
-import time
+import json, base64, os
+import urllib.parse, requests
+import time, base64
 import logging
 
 
@@ -86,7 +86,7 @@ class WhiteGhost(object):
 
 
     def getTime(self):
-        return lambda: int(round(time.time() * 1000))
+        return int(round(time.time() * 1000))
 
     def testEmpty(self, dictionary,key):
         if key in dictionary:
@@ -165,8 +165,9 @@ class WhiteGhost(object):
         data['req_token'] = self.hash(params[0], params[1])
         data['version'] = self.VERSION
         url = self.URL + endpoint
-        # if (!multipart):
-        #     data = urllib.quote_plus(data)
+        # #print(data)
+        # if (multipart == False):
+        #     data = urllib.parse.urlencode(data)
 
         payload = requests.post(url, data=data, headers=self._headers)
         return payload
@@ -250,20 +251,70 @@ class WhiteGhost(object):
         return snaps
 
 
+    def upload(self, mediaType, filename):
+        if not self.authenticated:
+            return False
+
+        mediaId = self.username.upper() + str(time.time())
+        timestamp = self.getTime()
+        fh = open(os.getcwd() + filename, 'rb')
+        base64img = base64.b64encode(self._encrypt(fh.read()))
+        result = self.post('/upload',
+            {'media_id': mediaId,
+            'type': mediaType,
+            'data': base64img, # img data
+            'timestamp': timestamp,
+            'username': self.username},
+            [self.auth_token,
+            timestamp],
+            True)
+        print(result.content)
+        if result:
+            return mediaId
+        else:
+            return False
+
+    def send(self, mediaId, recipients, time=3):
+        if not self.authenticated:
+            return False
+
+        timestamp = self.getTime()
+        result = self.post('/send',
+            {'mediaId': mediaId,
+            'recipient': ','.join(recipients),
+            'time': time,
+            'timestamp': timestamp,
+            'username': self.username},
+            [self.auth_token,
+            timestamp])
+        #print(result.status_code)
+
+        return result is None
+
     def getFriends(self, since=0):
         addedFriends = self.getUpdates()
 
-        if not updates:
+        if not addedFriends:
             return False
 
-        return addedFriends
+        return addedFriends['friends']
 
     def addFriends(self, usernames):
         if not self.authenticated:
             return False
 
+        friends = [ {'display': '', 'name': username, 'type': self.FRIEND_UNCONFIRMED}  for username in usernames ]
+
         timestamp = self.getTime()
-        result = self.post('/friend', {})
+        result = self.post('/friend',
+            {'action': 'multiadddelete',
+            'friend': {'friendsToAdd': friends, 'friendsToDelete': []},
+            'timestamp': timestamp,
+            'username': 'bbtest'},
+            [self.auth_token,
+            timestamp])
+        print(result.status_code)
+        return True
 
     def clearFeed(self):
         if not self.authenticated:
@@ -276,7 +327,7 @@ class WhiteGhost(object):
             [self.auth_token,
             timestamp])
 
-        return result is None
+        return testEmpty(result, 'message')
 
     def getBests(self, friends):
         if not self.authenticated:
@@ -386,7 +437,14 @@ class WhiteGhost(object):
 
     #     return request.getcode(), payload
 
-# a = WhiteGhost('bbtest', '278lban')
+a = WhiteGhost('bbtest', '278lban')
+#a.addFriends(['jhonny', 'jake', 'pop'])
+# fr = a.getFriends()
+# print(fr)
+# f = open(os.getcwd() + '/908967380595753700r.jpeg', 'rb')
+# data = f.read()
+pic = a.upload(a.MEDIA_IMAGE, '/908967380595753700r.jpeg')
+a.send(pic, ['drpepper98', 'drpepper89', 'bbtest'])
 # res = a.getSnaps()
 # for i in res:
 #     print(i)
