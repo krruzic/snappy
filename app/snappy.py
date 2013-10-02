@@ -56,7 +56,7 @@ class WhiteGhost(object):
     # Secret (used as a Salt for request tokens)
     SECRET = 'iEk21fuwZApXlz93750dmW22pw389dPwOk'
 
-    URL = 'https://feelinsonice-hrd.appspot.com/bq'
+    URL = 'http://localhost/bq' #'https://feelinsonice-hrd.appspot.com/bq'
 
     # static headers for each and every request
     _headers = {
@@ -67,7 +67,7 @@ class WhiteGhost(object):
     VERSION = '5.0.1'
     # authenticated.
     authenticated = False
-
+    auth_token = "100"
     # AES instance
     _crypto = None
 
@@ -82,7 +82,7 @@ class WhiteGhost(object):
         self.authenticated = False
         self.username = username
         self.password = password
-        self.login(username, password)
+        #self.login(username, password)
 
 
     def getTime(self):
@@ -160,13 +160,15 @@ class WhiteGhost(object):
         return out
 
 
-    def post(self, endpoint, data, params):
+    def sendData(self, endpoint, data, params, files=None):
 
         data['req_token'] = self.hash(params[0], params[1])
         data['version'] = self.VERSION
         url = self.URL + endpoint
-
-        payload = requests.post(url, data=data, headers=self._headers)
+        if files != None:
+            payload = requests.post(url, data=data, files=files, headers=self._headers)
+        else:
+            payload = requests.post(url, data=data, headers=self._headers)
         return payload
 
     def login(self, username, password):
@@ -175,7 +177,7 @@ class WhiteGhost(object):
         '''
 
         timestamp = self.getTime()
-        result = self.post('/login',
+        result = self.sendData('/login',
             {'username': username,
             'password': password,
             'timestamp': timestamp},
@@ -196,7 +198,7 @@ class WhiteGhost(object):
             return False
 
         timestamp = self.getTime()
-        result = self.post('/logout',
+        result = self.sendData('/logout',
             {'timestamp': timestamp,
             'username': self.username},
             [self.auth_token,
@@ -209,7 +211,7 @@ class WhiteGhost(object):
             return False
 
         timestamp = self.getTime()
-        result = self.post('/updates',
+        result = self.sendData('/updates',
             {'timestamp': timestamp,
             'username': self.username,
             'update_timestamp': since},
@@ -249,23 +251,26 @@ class WhiteGhost(object):
 
 
     def upload(self, mediaType, filename):
-        if not self.authenticated:
-            print("ERE")
-            return False
+        # if not self.authenticated:
+        #     print("ERE")
+        #     return False
 
         mediaId = self.username.upper() + str(time.time())
         timestamp = self.getTime()
-        fh = open(os.getcwd() + filename, 'rb')
-        data = self._encrypt(fh.read()) # encrypt data
-        base64img = base64.b64encode(fh.read())
-        result = self.post('/upload',
+        origfile = open(os.getcwd() + filename, 'rb')
+        encrypteddat = self._encrypt(origfile.read())
+        origfile.close()
+        encrfile = open(os.getcwd() + filename, 'wb')
+        encrfile.write(encrypteddat)
+        encrfile.close()
+        files = {'data': open(os.getcwd() + filename, 'rb')}
+        result = self.sendData('/upload',
             {'media_id': mediaId,
-            'type': 0,
-            'data': base64img, # img data
+            'type': mediaType,
             'timestamp': timestamp,
             'username': self.username},
             [self.auth_token,
-            timestamp])
+            timestamp], files)
         print(result)
         if result:
             return mediaId
@@ -277,41 +282,39 @@ class WhiteGhost(object):
             return False
 
         timestamp = self.getTime()
-        result = self.post('/send',
-            {'mediaId': mediaId,
+        result = self.sendData('/send',
+            {'media_id': mediaId,
             'recipient': ','.join(recipients),
             'time': time,
             'timestamp': timestamp,
             'username': self.username},
             [self.auth_token,
             timestamp])
-        #print(result.status_code)
+        print(result.status_code)
 
-        return result is None
+        return result
 
     def getFriends(self, since=0):
         addedFriends = self.getUpdates()
-
         if not addedFriends:
             return False
 
         return addedFriends['friends']
 
     def addFriends(self, usernames):
-        if not self.authenticated:
-            return False
+        # if not self.authenticated:
+        #     return False
 
         friends = [ {'display': '', 'name': username, 'type': self.FRIEND_UNCONFIRMED}  for username in usernames ]
 
         timestamp = self.getTime()
-        result = self.post('/friend',
+        result = self.sendData('/friend',
             {'action': 'multiadddelete',
             'friend': {'friendsToAdd': friends, 'friendsToDelete': []},
             'timestamp': timestamp,
-            'username': 'bbtest'},
+            'username': self.username},
             [self.auth_token,
             timestamp])
-        print(result.status_code)
         return result.content
 
     def clearFeed(self):
@@ -319,7 +322,7 @@ class WhiteGhost(object):
             return False
 
         timestamp = self.getTime()
-        result = self.post('/clear',
+        result = self.sendData('/clear',
             {'timestamp': timestamp,
             'username': self.username},
             [self.auth_token,
@@ -332,7 +335,7 @@ class WhiteGhost(object):
             return False
 
         timestamp = self.getTime()
-        result = self.post('/bests',
+        result = self.sendData('/bests',
             {'friend_usernames': json.dumps(friends),
             'timestamp': timestamp,
             'username': self.username},
@@ -356,7 +359,7 @@ class WhiteGhost(object):
         jpeg image, or mp4 video.
         '''
         timestamp = self.getTime()
-        result = self.post('/blob',
+        result = self.sendData('/blob',
             {'id': ident,
             'timestamp': timestamp,
             'username': self.username},
@@ -436,13 +439,13 @@ class WhiteGhost(object):
     #     return request.getcode(), payload
 
 a = WhiteGhost('bbtest', '278lban')
-#fr = a.addFriends(['jhonny', 'jake', 'pop'])
-# fr = a.getFriends()
+fr = a.addFriends(['jhonny', 'jake', 'pop'])
+#fr = a.getFriends()
 #print(fr)
 # f = open(os.getcwd() + '/908967380595753700r.jpeg', 'rb')
 # data = f.read()
-pic = a.upload(a.MEDIA_IMAGE, '/908967380595753700r.jpeg')
-a.send(pic, ['drpepper98', 'drpepper89', 'bbtest'])
+#pic = a.upload(a.MEDIA_IMAGE, '/data.jpeg')
+#a.send(pic, ['bbtest'])
 # res = a.getSnaps()
 # for i in res:
 #     print(i)
