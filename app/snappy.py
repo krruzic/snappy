@@ -56,10 +56,11 @@ class WhiteGhost(object):
     # Secret (used as a Salt for request tokens)
     SECRET = 'iEk21fuwZApXlz93750dmW22pw389dPwOk'
 
-    URL = 'http://localhost/bq' #'https://feelinsonice-hrd.appspot.com/bq'
+    URL = 'https://feelinsonice-hrd.appspot.com/bq'
 
     # static headers for each and every request
     _headers = {
+        'Content-Type': 'application/octet-stream',
         'user-agent': 'Snapchat/5.0.1 CFNetwork/609.1.4 Darwin/13.0.0',
         'version': '5.0.1'
     }
@@ -82,7 +83,7 @@ class WhiteGhost(object):
         self.authenticated = False
         self.username = username
         self.password = password
-        #self.login(username, password)
+        self.login(username, password)
 
 
     def getTime(self):
@@ -302,8 +303,8 @@ class WhiteGhost(object):
         return addedFriends['friends']
 
     def addFriends(self, usernames):
-        # if not self.authenticated:
-        #     return False
+        if not self.authenticated:
+            return False
 
         friends = [ {'display': '', 'name': username, 'type': self.FRIEND_UNCONFIRMED}  for username in usernames ]
 
