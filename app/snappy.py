@@ -60,7 +60,7 @@ class WhiteGhost(object):
 
     # static headers for each and every request
     _headers = {
-        'user-agent': 'CFNetwork/609.1.4 Darwin/13.0.0',
+        'user-agent': 'Snapchat/5.0.1 CFNetwork/609.1.4 Darwin/13.0.0',
         'version': '5.0.1'
     }
 
@@ -160,14 +160,11 @@ class WhiteGhost(object):
         return out
 
 
-    def post(self, endpoint, data, params, multipart=False):
+    def post(self, endpoint, data, params):
 
         data['req_token'] = self.hash(params[0], params[1])
         data['version'] = self.VERSION
         url = self.URL + endpoint
-        # #print(data)
-        # if (multipart == False):
-        #     data = urllib.parse.urlencode(data)
 
         payload = requests.post(url, data=data, headers=self._headers)
         return payload
@@ -253,22 +250,23 @@ class WhiteGhost(object):
 
     def upload(self, mediaType, filename):
         if not self.authenticated:
+            print("ERE")
             return False
 
         mediaId = self.username.upper() + str(time.time())
         timestamp = self.getTime()
         fh = open(os.getcwd() + filename, 'rb')
-        base64img = base64.b64encode(self._encrypt(fh.read()))
+        data = self._encrypt(fh.read()) # encrypt data
+        base64img = base64.b64encode(fh.read())
         result = self.post('/upload',
             {'media_id': mediaId,
-            'type': mediaType,
+            'type': 0,
             'data': base64img, # img data
             'timestamp': timestamp,
             'username': self.username},
             [self.auth_token,
-            timestamp],
-            True)
-        print(result.content)
+            timestamp])
+        print(result)
         if result:
             return mediaId
         else:
@@ -314,7 +312,7 @@ class WhiteGhost(object):
             [self.auth_token,
             timestamp])
         print(result.status_code)
-        return True
+        return result.content
 
     def clearFeed(self):
         if not self.authenticated:
@@ -438,9 +436,9 @@ class WhiteGhost(object):
     #     return request.getcode(), payload
 
 a = WhiteGhost('bbtest', '278lban')
-#a.addFriends(['jhonny', 'jake', 'pop'])
+#fr = a.addFriends(['jhonny', 'jake', 'pop'])
 # fr = a.getFriends()
-# print(fr)
+#print(fr)
 # f = open(os.getcwd() + '/908967380595753700r.jpeg', 'rb')
 # data = f.read()
 pic = a.upload(a.MEDIA_IMAGE, '/908967380595753700r.jpeg')
