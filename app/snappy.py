@@ -13,7 +13,7 @@ import logging
 
 
 
-class WhiteGhost(object):
+class Snappy(object):
 
     # encryption key for blob data
     ENCRYPTION_KEY = 'M02cnQ51Ji97vwT4'
@@ -83,7 +83,7 @@ class WhiteGhost(object):
         self.authenticated = False
         self.username = username
         self.password = password
-        self.login(username, password)
+        self.success = self.login(username, password)
 
 
     def getTime(self):
@@ -184,15 +184,17 @@ class WhiteGhost(object):
             'timestamp': timestamp},
             [self.STATIC_TOKEN,
             timestamp])
-
         result = result.json()
         if result and result.get('auth_token'):
             # successful login, set the auth token.
             self.authenticated = True
             self.auth_token = result['auth_token']
             self.username = username
-            # f = open('snapAuth', 'w')
-            # f.write()
+            return 'true'
+        else:
+            return 'false'
+
+
 
     def logout(self):
         if not self.authenticated:
@@ -439,7 +441,7 @@ class WhiteGhost(object):
 
     #     return request.getcode(), payload
 
-a = WhiteGhost('bbtest', '278lban')
+a = Snappy('bbtest', '278lddsban')
 fr = a.addFriends(['jhonny', 'jake', 'pop'])
 #fr = a.getFriends()
 #print(fr)
