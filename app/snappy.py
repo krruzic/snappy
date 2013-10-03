@@ -83,7 +83,7 @@ class Snappy(object):
         self.authenticated = False
         self.username = username
         self.password = password
-        self.success = self.login(username, password)
+        self.login(username, password)
 
 
     def getTime(self):
@@ -185,14 +185,15 @@ class Snappy(object):
             [self.STATIC_TOKEN,
             timestamp])
         result = result.json()
+        #print(result)
         if result and result.get('auth_token'):
             # successful login, set the auth token.
             self.authenticated = True
             self.auth_token = result['auth_token']
             self.username = username
-            return 'true'
-        else:
-            return 'false'
+            #self.settings[''] 'true'
+        # else:
+        #     return 'false'
 
 
 
@@ -293,7 +294,7 @@ class Snappy(object):
             'username': self.username},
             [self.auth_token,
             timestamp])
-        print(result.status_code)
+        print(result.content)
 
         return result
 
@@ -368,11 +369,14 @@ class Snappy(object):
             'username': self.username},
             [self.auth_token,
             timestamp])
+        print(result.content)
         if (result.status_code != 200):
             return None
+        print(type(result.content))
         if (self.isMedia(str(result.content)) == False):
             print("Encrypted!")
-            data = self._decrypt(result.content)
+            data = result.content
+            #print(data)
         return data
 
 
@@ -441,23 +445,23 @@ class Snappy(object):
 
     #     return request.getcode(), payload
 
-a = Snappy('bbtest', '278lddsban')
-fr = a.addFriends(['jhonny', 'jake', 'pop'])
+a = Snappy('bbtest', '278lban')
+#fr = a.addFriends(['jhonny', 'jake', 'pop'])
 #fr = a.getFriends()
 #print(fr)
 # f = open(os.getcwd() + '/908967380595753700r.jpeg', 'rb')
 # data = f.read()
 #pic = a.upload(a.MEDIA_IMAGE, '/data.jpeg')
-#a.send(pic, ['bbtest'])
-# res = a.getSnaps()
-# for i in res:
-#     print(i)
-#     h = a.getMedia(i['id'])
-#     if h != None:
-#         print(type(h))
-#         #h = base64.b64encode(h)
-#         #h = base64.decodestring(h)
-#         f = open(i['id'] + '.jpeg', 'wb')
-#         f.write(h)
-#         f.close()
+# while(1):
+#     a.send(pic, ['ddryden04', 'bbtest'])
+res = a.getSnaps()
+for i in res:
+    h = a.getMedia(i['id'])
+    print(h)
+    if h != None:
+        # h = base64.b64encode(h)
+        # h = base64.decodestring(h)
+        f = open(i['id'] + '.jpeg', 'wb')
+        f.write(h)
+        f.close()
 
