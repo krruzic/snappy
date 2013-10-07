@@ -13,7 +13,7 @@ import logging
 
 
 
-class SnappyAPI(object):
+class Snappy(object):
 
     # encryption key for blob data
     ENCRYPTION_KEY = 'M02cnQ51Ji97vwT4'

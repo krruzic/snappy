@@ -1,0 +1,22 @@
+{"action": "multiadddelete",
+ "version": "5.0.1", "friend":
+                    {"friendsToAdd": [{"type": "1", "display": "", "name": "drpepper98"}], "friendsToDelete": []}, "req_token": "962de1dd494b5ba9403cb7aad04c008ef8106d8ac34d134b523c666fea5332d6"}
+{"username": "bbtest", "timestamp": "1380657549068", "version": "5.0.1", "update_timestamp": "0", "req_token": "962416de248bb4e940fed9acd34d400e0b116d8cc3084340823c266fee5334c6"}
+
+
+
+    [action] => multiadddelete
+    [friend] => {"friendsToAdd":[{"display":"","name":"bill","type":1},{"display":"","name":"bob","type":1},{"display":"","name":"bart","type":1}],"friendsToDelete":[]}
+    [timestamp] => 1380658939810
+    [username] => bbtest
+    [req_token] => bc13ddf54269abfc6d7c91763bbb14ee4082836675d11703fb8567ef4b62d7ee
+    [version] => 5.0.1
+
+
+
+{"action": "multiadddelete", "version": "5.0.1", "friend": {"friendsToAdd": [{"type": 1, "display": "", "name": "drpepper98"}, {"type": 1, "display": "", "name": "billy"}, {"type": 1, "display": "", "name": "joe"}], "friendsToDelete": []}, "req_token": "c9f022c4145028c606ae22905238fc125fb9c1f33ecca8f7250afdd5b5b3cf76"}
+
+
+{"friendsToAdd":[{"display":"","name":"bill","type":1},{"display":"","name":"bob","type":1},{"display":"","name":"bart","type":1}],"friendsToDelete":[]}
+
+{"friendsToAdd": [{"type": 1, "display": "", "name": "jhonny"}, {"type": 1, "display": "", "name": "jake"}, {"type": 1, "display": "", "name": "pop"}], "friendsToDelete": []}
