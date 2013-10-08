@@ -1,10 +1,9 @@
-try:
-    from Crypto.Cipher import AES
-except Exception:
-    raise Exception("Error when trying to import pycrypto ( %s ), "
-                    "if you're running on dev_appserver on GAE, "
-                    "you will need to install the tar.gz version of PyCrypto "
-                    "-- the pip version doesn't work with GAE")
+from Crypto.Cipher import AES
+# except Exception:
+#     raise Exception("Error when trying to import pycrypto ( %s ), "
+#                     "if you're running on dev_appserver on GAE, "
+#                     "you will need to install the tar.gz version of PyCrypto "
+#                     "-- the pip version doesn't work with GAE")
 from hashlib import sha256
 import json, base64, os, random
 import urllib.parse, requests
@@ -13,7 +12,7 @@ import logging
 
 
 
-class SnappyAPI(object):
+class Snappy(object):
 
     # encryption key for blob data
     ENCRYPTION_KEY = 'M02cnQ51Ji97vwT4'
@@ -478,26 +477,26 @@ class SnappyAPI(object):
 
     #     return request.getcode(), payload
 
-a = Snappy('bbtest', '278lban')
-# fr = a.addFriends(['ughttt', 'love', 'friend'])
-# fr = a.getFriends()
-# print(fr)
-# f = open(os.getcwd() + '/908967380595753700r.jpeg', 'rb')
-# data = f.read()
-# pic = a.upload(a.MEDIA_IMAGE, '/night.jpg')
-# while(1):
-# a.send(pic, ['ughttt'])
-p = a.getSnaps()
-for i in p:
-    print(i)
-    print()
-# for i in res:
-#     h = a.getMedia(i['id'])
-#     print(h)
-#     if h != None:
-#         # h = base64.b64encode(h)
-#         # h = base64.decodestring(h)
-#         f = open(i['id'] + '.jpeg', 'wb')
-#         f.write(h)
-#         f.close()
+# a = Snappy('bbtest', '278lban')
+# # fr = a.addFriends(['ughttt', 'love', 'friend'])
+# # fr = a.getFriends()
+# # print(fr)
+# # f = open(os.getcwd() + '/908967380595753700r.jpeg', 'rb')
+# # data = f.read()
+# # pic = a.upload(a.MEDIA_IMAGE, '/night.jpg')
+# # while(1):
+# # a.send(pic, ['ughttt'])
+# p = a.getSnaps()
+# for i in p:
+#     print(i)
+#     print()
+# # for i in res:
+# #     h = a.getMedia(i['id'])
+# #     print(h)
+# #     if h != None:
+# #         # h = base64.b64encode(h)
+# #         # h = base64.decodestring(h)
+# #         f = open(i['id'] + '.jpeg', 'wb')
+# #         f.write(h)
+# #         f.close()
 

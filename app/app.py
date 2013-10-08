@@ -1,10 +1,11 @@
 import pickle
-from Snappy import *
+from .snappy import Snappy
 import tart
 #start app -> check whether the user has saved credentials. yes -> main screen with tiny spinner and cached data. no -> login sheet
 class App(tart.Application):
     #session = WhiteGhost('bbtest', '278lban')
     SETTINGS_FILE = 'data/settings.state'
+
 
     def __init__(self):
         super().__init__(debug=False)   # set True for some extra debug output
@@ -16,14 +17,23 @@ class App(tart.Application):
         self.restore_data(self.settings, self.SETTINGS_FILE)
         print("restored: ", self.settings)
 
+
+
+    def testEmpty(self, dictionary,key):
+        if key in dictionary:
+            if dictionary[key]:
+                return dictionary[key]
+        return ''
+
     def onUiReady(self):
         print("Call worked!")
         if self.settings['login'] == 'true':
+            self.onLogin()
             tart.send('loginChecked', value='true')
         else:
             tart.send('loginChecked', value='false')
 
-    def onLogin(self, username, password):
+    def onLogin(self, username=None, password=None):
 
         if self.settings['login'] == 'true':
             session = Snappy(self.settings['username'], self.settings['password'])
@@ -44,9 +54,35 @@ class App(tart.Application):
         self.onSaveSettings(self.settings)
 
     def onRequestFeed(self):
-        snaps = session.getSnaps()
-        for snap in snaps:
-            tart.send('receiveSnaps', snap=snap)
+        updates = session.getSnaps()
+        snaps = []
+        for item in updates['snaps']:
+            snap = {
+            'url': item['id'],
+            'media_id': self.testEmpty(item, 'c_id'),
+            'media_type': self.testEmpty(item, 'm'), # >3 Friend Request
+            'time': self.testEmpty(item,'t'),
+            'sender': self.testEmpty(item, 'sn'),
+            'recipient': self.testEmpty(item, 'rp'),
+            'status': item['st'], # Sent, Delivered, Opened, Screenshotted
+            'sent': item['sts'],
+            'opened': item['ts']
+            }
+
+
+            if snap['recipient'] == '': # Snap recieved
+                snap['type'] = '1' # recieved == 1
+            else:
+                snap['type'] = '2' # sent == 2
+
+            if snap['media_type'] >= 3: # Notifications
+                snap['type'] = '3' # notif == 3
+
+            snaps.append(snap)
+        if len(snaps) >= 1:
+            tart.send('snapsExist')
+        for result in sorted(snaps, key=itemgetter('type')):
+            tart.send('snapsRecieved', snap=result)
 
     def onSaveSettings(self, settings):
         self.settings.update(settings)
