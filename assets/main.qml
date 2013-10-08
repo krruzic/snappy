@@ -11,6 +11,10 @@ NavigationPane {
             root.push(page);
         }
     }
+//    function onLogin(data) {
+//        login.activity.visible = false;
+//
+//    }
     LoginPage {
         id: login
         actionBarVisibility: ChromeVisibility.Hidden
