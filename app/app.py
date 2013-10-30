@@ -1,7 +1,7 @@
 import pickle
 from .snappy import Snappy
 import tart
-#start app -> check whether the user has saved credentials. yes -> main screen with tiny spinner and cached data. no -> login sheet
+#start app -> check whether the user has saved credentials. yes -> main screen with tiny spinner and cached data. no -> login page
 class App(tart.Application):
     #session = WhiteGhost('bbtest', '278lban')
     SETTINGS_FILE = 'data/settings.state'
@@ -26,12 +26,7 @@ class App(tart.Application):
         return ''
 
     def onUiReady(self):
-        print("Call worked!")
-        if self.settings['login'] == 'true':
-            self.onLogin()
-            tart.send('loginChecked', value='true')
-        else:
-            tart.send('loginChecked', value='false')
+        pass
 
     def onLogin(self, username=None, password=None):
 
@@ -43,18 +38,23 @@ class App(tart.Application):
             self.onSaveSettings(self.settings)
             session = Snappy(username, password)
 
-        self.settings['login'] = session.success
+        self.settings['login'] = session.authenticated
 
-        if session.success == 'true':
+        if session.authenticated == True:
+            self.settings['login'] = 'true'
             tart.send('loginResult', value='true')
         else:
-            self.settings['login'] = session.success
+            self.settings['login'] = 'false'
             tart.send('loginResult', value='false')
 
         self.onSaveSettings(self.settings)
 
     def onRequestFeed(self):
         updates = session.getSnaps()
+        if (updates != null):
+            self.onParseFeed(updates)
+
+    def onParseFeed(self, updates):
         snaps = []
         for item in updates['snaps']:
             snap = {
@@ -68,8 +68,10 @@ class App(tart.Application):
             'sent': item['sts'],
             'opened': item['ts']
             }
-
-
+            if snap['media_type'] == 0:
+                snap['media'] = 'image'
+            elif snap['media_type'] in [1, 2]:
+                snap['media'] = 'video'
             if snap['recipient'] == '': # Snap recieved
                 snap['type'] = '1' # recieved == 1
             else:
@@ -79,8 +81,6 @@ class App(tart.Application):
                 snap['type'] = '3' # notif == 3
 
             snaps.append(snap)
-        if len(snaps) >= 1:
-            tart.send('snapsExist')
         for result in sorted(snaps, key=itemgetter('type')):
             tart.send('snapsRecieved', snap=result)
 

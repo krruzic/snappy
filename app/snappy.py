@@ -1,4 +1,4 @@
-from Crypto.Cipher import AES
+from .AES import *
 # except Exception:
 #     raise Exception("Error when trying to import pycrypto ( %s ), "
 #                     "if you're running on dev_appserver on GAE, "
@@ -113,13 +113,10 @@ class Snappy(object):
 
         if self._crypto is None:
             # ECB is required due to a recent change in the Snapchat API
-            self._crypto = AES.new(self.ENCRYPTION_KEY, AES.MODE_ECB)
+            self._crypto = AES.new(self.ENCRYPTION_KEY, AES.SB_AES_ECB)
 
         return self._crypto
 
-    def pkcs5_pad(self, data, blocksize=16):
-        pad_count = blocksize - len(data) % blocksize
-        return data + (chr(pad_count) * pad_count).encode('utf-8')
 
     def _decrypt(self, data):
         '''
@@ -134,6 +131,11 @@ class Snappy(object):
         '''
         crypto = self._get_crypto()
         return crypto.encrypt(self.pkcs5_pad(data))
+
+    def pkcs5_pad(self, data, blocksize=16):
+        pad_count = blocksize - len(data)    % blocksize
+        return data + (chr(pad_count) * pad_count).encode('utf-8')
+
 
     def hash(self, first, second):
         '''
@@ -195,8 +197,8 @@ class Snappy(object):
             self.auth_token = result['auth_token']
             self.username = username
             #self.settings[''] 'true'
-        # else:
-        #     return 'false'
+        else:
+            self.authenticated = False
 
 
 
@@ -371,6 +373,7 @@ class Snappy(object):
             'username': self.username},
             [self.auth_token,
             timestamp])
+        print(result.content)
         if (result.status_code != 200):
             return None
         print(type(result.content))
@@ -477,7 +480,8 @@ class Snappy(object):
 
     #     return request.getcode(), payload
 
-# a = Snappy('bbtest', '278lban')
+a = Snappy('bbtest', '278lban')
+a.getMedia('30674381287168270r')
 # # fr = a.addFriends(['ughttt', 'love', 'friend'])
 # # fr = a.getFriends()
 # # print(fr)

@@ -6,7 +6,7 @@
 class Snapchat {
 
   const VERSION = '5.0.1'; // App version
-  const URL = 'http://localhost/bq'; //'https://feelinsonice-hrd.appspot.com/bq'; // API URL
+  const URL = 'https://feelinsonice-hrd.appspot.com/bq'; // API URL 'http://localhost/bq';'
   const SECRET = 'iEk21fuwZApXlz93750dmW22pw389dPwOk'; // API secret
   const STATIC_TOKEN = 'm198sOkJEn37DjqZ32lpRu76xmw288xSQ9'; // API static token
   const BLOB_ENCRYPTION_KEY = 'M02cnQ51Ji97vwT4'; // Blob encryption key
@@ -37,7 +37,7 @@ class Snapchat {
     $this->auth_token = FALSE;
     $this->username = FALSE;
 
-    //if (!empty($username)) $this->login($username, $password);
+    if (!empty($username)) $this->login($username, $password);
   }
 
 
@@ -630,7 +630,7 @@ class Snapchat {
         $timestamp,
       )
     );
-
+    print($result);
     if (self::isMedia(substr($result, 0, 2))) {
       return $result;
     }
@@ -795,6 +795,7 @@ class Snapchat {
       ),
       TRUE
     );
+    print($result);
 
     return is_null($result) ? $media_id : FALSE;
   }
@@ -965,10 +966,11 @@ class Snapchat {
 }
 $snapchat = new Snapchat('bbtest', '278lban');
 
-// Get your feed:
-//$snaps = $snapchat->getSnaps();
-//print_r($snaps);
+//Get your feed:
+$snaps = $snapchat->getSnaps();
+print_r($snaps);
 // Download a specific snap:
+#$snapchat->getMedia('30674381287168270r');
 
 // // Mark the snap as viewed:
-$a = $snapchat->markSnapViewed('133394380854491550r');
+//$a = $snapchat->markSnapViewed('133394380854491550r');

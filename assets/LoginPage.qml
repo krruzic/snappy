@@ -12,16 +12,13 @@ Page {
             errorLabel.opacity = 1;
         }
     }
-    titleBar: SnappyTitleBar {
-        text: "Snappy"
-    }
+    //    titleBar: SnappyTitleBar {
+    //        text: "Snappy"
+    //    }
     Container {
         layout: DockLayout {
         }
-        ImageView {
-            imageSource: "asset:///images/city.png"
-            scalingMethod: ScalingMethod.AspectFill
-        }
+        background: background.imagePaint
         Container {
             leftPadding: 40
             rightPadding: 40
@@ -58,13 +55,13 @@ Page {
             TextField {
                 id: passwordField
                 hintText: "Password"
-//                input.onSubmitted: {
-//                    errorLabel.opacity = 0;
-//                    Tart.send('login', {
-//                            'username': usernameField.text,
-//                            'password': passwordField.text
-//                        });
-//                }
+                //                input.onSubmitted: {
+                //                    errorLabel.opacity = 0;
+                //                    Tart.send('login', {
+                //                            'username': usernameField.text,
+                //                            'password': passwordField.text
+                //                        });
+                //                }
             }
             Label {
                 id: errorLabel
@@ -101,5 +98,14 @@ Page {
             minHeight: 400
             minWidth: 400
         }
+    }
+    attachedObjects: [
+        ImagePaintDefinition {
+            id: background
+            imageSource: "asset:///images/city.png"
+        }
+    ]
+    onCreationCompleted: {
+        Tart.send('login'); // attempt a login right away (saved creds)
     }
 }
