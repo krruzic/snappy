@@ -1,9 +1,4 @@
 from .AES import *
-# except Exception:
-#     raise Exception("Error when trying to import pycrypto ( %s ), "
-#                     "if you're running on dev_appserver on GAE, "
-#                     "you will need to install the tar.gz version of PyCrypto "
-#                     "-- the pip version doesn't work with GAE")
 from hashlib import sha256
 import json, base64, os, random
 import urllib.parse, requests
@@ -79,7 +74,7 @@ class Snappy(object):
     JSON = 0x2
 
     def __init__(self, username=None, password=None, auth_token=None):
-        self.authenticated = False
+        self.authenticated = 'false'
         self.username = username
         self.password = password
         self.login(username, password)
@@ -190,20 +185,19 @@ class Snappy(object):
             [self.STATIC_TOKEN,
             timestamp])
         result = result.json()
-        #print(result)
         if result and result.get('auth_token'):
             # successful login, set the auth token.
-            self.authenticated = True
+            self.authenticated = 'true'
             self.auth_token = result['auth_token']
             self.username = username
             #self.settings[''] 'true'
         else:
-            self.authenticated = False
+            self.authenticated = 'false'
 
 
 
     def logout(self):
-        if not self.authenticated:
+        if self.authenticated != 'true':
             return False
 
         timestamp = self.getTime()
@@ -241,23 +235,28 @@ class Snappy(object):
         if not updates:
             return False
 
-        # snaps = []
-        # for item in updates['snaps']:
-        #     snap = {
-        #     'id': item['id'],
-        #     'media_id': self.testEmpty(item, 'c_id'),
-        #     'media_type': self.testEmpty(item, 'm'),
-        #     'time': self.testEmpty(item,'t'),
-        #     'sender': self.testEmpty(item, 'sn'),
-        #     'recipient': self.testEmpty(item, 'rp'),
-        #     'status': item['st'],
-        #     'screenshotCount': self.testEmpty(item, 'c'),
-        #     'sent': item['sts'],
-        #     'opened': item['ts']
-        #     }
-        #     snaps.append(snap)
+        snaps = []
+        for item in updates['snaps']:
+            snap = {
+            'url': item['id'],
+            'media_id': self.testEmpty(item, 'c_id'),
+            'media_type': self.testEmpty(item, 'm'),
+            'time': self.testEmpty(item,'t'),
+            'user': self.testEmpty(item, 'sn'),
+            'recipient': self.testEmpty(item, 'rp'),
+            'title': item['st'],
+            'screenshotCount': self.testEmpty(item, 'c'),
+            'sent': item['sts'],
+            'opened': item['ts']
+            }
+            snaps.append(snap)
 
-        return updates['snaps']
+                    # snapStatus: data.snap['title'],
+                    # snapTime: data.snap['time'],
+                    # snapType: data.snap['type'],
+                    # snapUser: data.snap['user'],
+                    # snapURL: data.snap['url']
+        return snaps
 
 
     def upload(self, mediaType, filename):
@@ -311,7 +310,7 @@ class Snappy(object):
         return addedFriends['friends']
 
     def addFriends(self, usernames):
-        if not self.authenticated:
+        if self.authenticated != 'true':
             return False
 
         friends = [ {'display': '', 'name': username, 'type': self.FRIEND_UNCONFIRMED}  for username in usernames ]
@@ -327,7 +326,7 @@ class Snappy(object):
         return result.content
 
     def clearFeed(self):
-        if not self.authenticated:
+        if self.authenticated != 'true':
             return False
 
         timestamp = self.getTime()
@@ -340,7 +339,7 @@ class Snappy(object):
         return result.content
 
     def getBests(self, friends):
-        if not self.authenticated:
+        if self.authenticated != 'true':
             return False
 
         timestamp = self.getTime()
@@ -480,8 +479,8 @@ class Snappy(object):
 
     #     return request.getcode(), payload
 
-a = Snappy('bbtest', '278lban')
-a.getMedia('30674381287168270r')
+# a = Snappy('bbtest', '278lban')
+# a.getMedia('30674381287168270r')
 # # fr = a.addFriends(['ughttt', 'love', 'friend'])
 # # fr = a.getFriends()
 # # print(fr)

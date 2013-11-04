@@ -61,7 +61,6 @@ class Snapchat {
     return intval(microtime(TRUE) * 1000);
   }
 
-
   /**
 * Pads data using PKCS5.
 *
@@ -967,8 +966,7 @@ class Snapchat {
 $snapchat = new Snapchat('bbtest', '278lban');
 
 //Get your feed:
-$snaps = $snapchat->getSnaps();
-print_r($snaps);
+$snaps = $snapchat->clearFeed();
 // Download a specific snap:
 #$snapchat->getMedia('30674381287168270r');
 
