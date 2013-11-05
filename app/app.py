@@ -58,7 +58,8 @@ class App(tart.Application):
         self.settings = {
             'username': '',
             'password': '',
-            'login': 'false'
+            'login': 'false',
+            'authToken': ''
         }
         self.restore_data(self.settings, self.SETTINGS_FILE)
         print("restored: ", self.settings)
@@ -83,14 +84,15 @@ class App(tart.Application):
         self.session = Snappy(username, password)
 
         self.settings['login'] = self.session.authenticated
-
+        if self.settings['login']:
+            self.settings['authToken'] = self.session.authToken
         tart.send('loginResult', value=self.settings['login'])
         self.onSaveSettings(self.settings)
 
     def onRequestFeed(self):
         if self.session == None:
-            print("Not logged in...")
-            self.session = Snappy(self.settings['username'], self.settings['password'])
+            print("Starting Session")
+            self.session = Snappy(self.settings['username'], self.settings['password'], self.settings['authToken'])
 
         snaps = self.session.getSnaps()
         if (snaps != False):
@@ -101,19 +103,20 @@ class App(tart.Application):
     def onParseFeed(self, snaps):
         print("Parsing snaps...")
         for snap in snaps:
-            snap['media'] = ''
+            #snap['media'] = ''
+            print(snap)
             snap['time'] = self.prettyDate(snap['sent'] // 1000)
-            if snap['media_type'] == 0:
+            if snap['media_type'] == '0':
                 snap['media'] = 'image'
-            elif snap['media_type'] in [1, 2]:
+            elif snap['media_type'] in ['1', '2']:
                 snap['media'] = 'video'
             if snap['recipient'] == '': # Snap recieved
-                snap['type'] = '1' # recieved == 1
+                snap['type'] = 'Recieved' # recieved == 1
             else:
-                snap['type'] = '2' # sent == 2
+                snap['type'] = 'Sent' # sent == 2
             if snap['media_type'] != '':
                 if int(snap['media_type']) >= 3: # Notifications
-                    snap['type'] = '3' # notif == 3
+                    snap['type'] = 'Notification' # notif == 3
             print("MEDIA " + snap['media'])
 
         for result in sorted(snaps, key=itemgetter('type')):

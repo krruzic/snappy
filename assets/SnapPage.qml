@@ -17,33 +17,17 @@ NavigationPane {
 
         function onSnapsReceived(data) {
             activity.visible = false;
-            var currType = data.snap['type']; // Keep track of the current snap type
-            if (currType != prevType) { // If our new item is a different type than the last one,
-                insertHeader(currType); // Append a header
-            }
+            console.log("SNAP STATUS" + data.snap['media'])
             snapModel.append({ // Append an item with the necessary info
                     type: 'item', //+ String(currType), // Allows easy appending of different items
-                    snapStatus: data.snap['title'],
+                    snapStatus: data.snap['media'],
                     snapTime: data.snap['time'],
-                    snapType: data.snap['media'],
+                    snapType: data.snap['type'],
                     snapUser: data.snap['user'],
                     snapURL: data.snap['url']
                 });
-            var prevType = data.snap['type'];
         }
-        function insertHeader(type) { // Just checks which type we are about to insert
-            if (type == 2) { // It will never be 1 since we insert that first
-                snapModel.append({
-                        type: 'header',
-                        title: 'Sent'
-                    });
-            } else if (type == 3) {
-                snapModel.append({
-                        type: 'header',
-                        title: 'Notifications'
-                    });
-            }
-        }
+
         titleBar: SnappyTitleBar {
             text: "Snappy"
         }
@@ -91,18 +75,6 @@ NavigationPane {
                             snapType: ListItemData.snapType
                             snapUser: ListItemData.snapUser
                             snapURL: ListItemData.snapURL // URL the snap resides in (fetch this onTriggered)
-                        }
-                    },
-                    ListItemComponent {
-                        type: 'header'
-                        Header {
-                            id: headerItem
-                            title: ListItemData.title
-                        }
-                    },
-                    ListItemComponent {
-                        SnapItem {
-                            id: sentItem
                         }
                     }
                 ]

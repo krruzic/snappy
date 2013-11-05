@@ -3,6 +3,8 @@ import bb.cascades 1.2
 TitleBar {
     property alias text: pageTitle.text
     kind: TitleBarKind.FreeForm
+    scrollBehavior: TitleBarScrollBehavior.Sticky
+
     kindProperties: FreeFormTitleBarKindProperties {
         content: Container {
             background: background.imagePaint
@@ -14,7 +16,7 @@ TitleBar {
                 Label {
                     id: pageTitle
                     text: ""
-                    horizontalAlignment: HorizontalAlignment.Left
+                    horizontalAlignment: HorizontalAlignment.Center
                     verticalAlignment: VerticalAlignment.Center
                     textStyle.fontWeight: FontWeight.Default
                     textStyle.fontSize: FontSize.PointValue

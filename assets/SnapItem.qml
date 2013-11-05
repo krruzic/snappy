@@ -8,7 +8,7 @@ CustomListItem {
     property string snapUser: "madk"
     property string snapURL: "invisible" // URL to the snap (not visible)
     Container {
-        minHeight: 120
+        verticalAlignment: VerticalAlignment.Fill
         horizontalAlignment: HorizontalAlignment.Fill
         layout: StackLayout {
             orientation: LayoutOrientation.LeftToRight
@@ -25,7 +25,7 @@ CustomListItem {
                 bottomMargin: 0
             }
             Label {
-                text: snapTime + " - " + snapStatus
+                text: snapTime + " - " + snapType
                 topMargin: 0
                 bottomMargin: 0
                 textStyle.fontSize: FontSize.PointValue

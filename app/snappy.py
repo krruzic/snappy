@@ -62,7 +62,7 @@ class Snappy(object):
     VERSION = '5.0.1'
     # authenticated.
     authenticated = False
-    auth_token = "100"
+    authToken = ""
     # AES instance
     _crypto = None
 
@@ -73,12 +73,18 @@ class Snappy(object):
     BLOB = 0x1
     JSON = 0x2
 
-    def __init__(self, username=None, password=None, auth_token=None):
+    def __init__(self, username=None, password=None, authToken=''):
         self.authenticated = 'false'
         self.username = username
         self.password = password
-        self.login(username, password)
 
+        if (authToken == ''):
+            self.login(username, password)
+        else:
+            self.authToken = authToken
+            self.authenticated = 'true'
+
+# lesbian amputees rubbing nubs
 
     def getTime(self, rounded=True):
         if (rounded):
@@ -138,7 +144,7 @@ class Snappy(object):
         '''
 
         # salt the authtoken and timestamp
-        first = self.SECRET + first
+        first = self.SECRET + str(first)
         second = str(second) + self.SECRET
         first = first.encode('utf-8')
         second = second.encode('utf-8')
@@ -188,7 +194,7 @@ class Snappy(object):
         if result and result.get('auth_token'):
             # successful login, set the auth token.
             self.authenticated = 'true'
-            self.auth_token = result['auth_token']
+            self.authToken = result['auth_token']
             self.username = username
             #self.settings[''] 'true'
         else:
@@ -204,7 +210,7 @@ class Snappy(object):
         result = self.sendData('/logout',
             {'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
 
         return result is None
@@ -218,14 +224,15 @@ class Snappy(object):
             {'timestamp': timestamp,
             'username': self.username,
             'update_timestamp': since},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
+        print(result.content)
         result = result.json()
         #print(result)
         if result and result.get('auth_token'):
             # successful login, set the auth token.
             self.authenticated = True
-            self.auth_token = result['auth_token']
+            self.authToken = result['auth_token']
 
         return result
 
@@ -251,11 +258,6 @@ class Snappy(object):
             }
             snaps.append(snap)
 
-                    # snapStatus: data.snap['title'],
-                    # snapTime: data.snap['time'],
-                    # snapType: data.snap['type'],
-                    # snapUser: data.snap['user'],
-                    # snapURL: data.snap['url']
         return snaps
 
 
@@ -278,7 +280,7 @@ class Snappy(object):
             'type': mediaType,
             'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp], files)
         #print(result)
         if result:
@@ -296,7 +298,7 @@ class Snappy(object):
             'time': time,
             'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
         #print(result.content)
 
@@ -321,7 +323,7 @@ class Snappy(object):
             'friend': json.dumps({'friendsToAdd': friends, 'friendsToDelete': []}),
             'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
         return result.content
 
@@ -333,7 +335,7 @@ class Snappy(object):
         result = self.sendData('/clear',
             {'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
 
         return result.content
@@ -347,7 +349,7 @@ class Snappy(object):
             {'friend_usernames': json.dumps(friends),
             'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
         result = result.json()
         #print(result)
@@ -370,7 +372,7 @@ class Snappy(object):
             {'id': ident,
             'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
         print(result.content)
         if (result.status_code != 200):
@@ -410,7 +412,7 @@ class Snappy(object):
             'json': json.dumps(snapInfo),
             'timestamp': timestamp,
             'username': self.username},
-            [self.auth_token,
+            [self.authToken,
             timestamp])
         return result
 
@@ -434,7 +436,7 @@ class Snappy(object):
     #     if response_type is None:
     #         response_type = self.JSON
 
-    #     auth_token = self.auth_token or self.STATIC_TOKEN
+    #     auth_token = self.authToken or self.STATIC_TOKEN
     #     timestamp = round(time.time() * 1000)
 
     #     request_token = self._generate_request_token(auth_token=auth_token,
