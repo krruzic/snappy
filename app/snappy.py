@@ -91,10 +91,9 @@ class Snappy(object):
             return int(round(time.time() * 1000))
         return time.time() * 1000
 
-    def testEmpty(self, dictionary,key):
+    def testEmpty(self, dictionary, key):
         if key in dictionary:
-            if dictionary[key]:
-                return dictionary[key]
+            return dictionary[key]
         return ''
 
 
@@ -114,7 +113,7 @@ class Snappy(object):
 
         if self._crypto is None:
             # ECB is required due to a recent change in the Snapchat API
-            self._crypto = AES.new(self.ENCRYPTION_KEY, AES.SB_AES_ECB)
+            self._crypto = AES.new(self.ENCRYPTION_KEY, SB_AES_ECB)
 
         return self._crypto
 
@@ -244,11 +243,13 @@ class Snappy(object):
 
         snaps = []
         for item in updates['snaps']:
+            if 'm' in item:
+                print("raw media", item['m'])
             snap = {
             'url': item['id'],
             'media_id': self.testEmpty(item, 'c_id'),
             'media_type': self.testEmpty(item, 'm'),
-            'time': self.testEmpty(item,'t'),
+            'countdown': self.testEmpty(item,'t'),
             'user': self.testEmpty(item, 'sn'),
             'recipient': self.testEmpty(item, 'rp'),
             'title': item['st'],
@@ -380,8 +381,9 @@ class Snappy(object):
         print(type(result.content))
         if (self.isMedia(str(result.content)) == False):
             print("Encrypted!")
+            data = self._decrypt(result.content)
+        else:
             data = result.content
-            #print(data)
         return data
 
     def markRead(self, ident, viewed=1):

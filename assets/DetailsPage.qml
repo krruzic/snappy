@@ -1,10 +1,18 @@
 import bb.cascades 1.2
 
 Page {
-    titleBar: TitleBar {
+    id: detailsPage
+    objectName: ' detailsPage'
+    property alias imageSource: image.imageSource
+    titleBar: SnappyTitleBar {
         // Localized text with the dynamic translation and locale updates support
-        title: qsTr("Second Page") + Retranslate.onLocaleOrLanguageChanged
+        text: "Snappy"
     }
     Container {
+        verticalAlignment: VerticalAlignment.Fill
+        horizontalAlignment: HorizontalAlignment.Fill
+        ImageView {
+            id: image
+        }
     }
 }

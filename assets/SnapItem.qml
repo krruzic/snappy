@@ -7,33 +7,47 @@ CustomListItem {
     property string snapType: "picture"
     property string snapUser: "madk"
     property string snapURL: "invisible" // URL to the snap (not visible)
+    property string snapView: "" // time you can view the snap for
     Container {
-        verticalAlignment: VerticalAlignment.Fill
         horizontalAlignment: HorizontalAlignment.Fill
-        layout: StackLayout {
-            orientation: LayoutOrientation.LeftToRight
-        }
-        ImageView {
-            verticalAlignment: VerticalAlignment.Center
-            imageSource: "asset:///images/" + snapStatus + ".png"
+        layout: DockLayout {
         }
         Container {
+            ImageView {
+                verticalAlignment: VerticalAlignment.Center
+                imageSource: "asset:///images/" + snapStatus + ".png"
+            }
+            layout: StackLayout {
+                orientation: LayoutOrientation.LeftToRight
+            }
             verticalAlignment: VerticalAlignment.Center
-            Label {
-                text: snapUser
-                topMargin: 0
-                bottomMargin: 0
+            Container {
+                verticalAlignment: VerticalAlignment.Center
+                Label {
+                    text: snapUser
+                    topMargin: 0
+                    bottomMargin: 0
+                }
+                Label {
+                    text: snapTime + " - " + snapType
+                    topMargin: 0
+                    bottomMargin: 0
+                    textStyle.fontSize: FontSize.PointValue
+                    textFit.maxFontSizeValue: 4.0
+                    textFit.minFontSizeValue: 4.0
+                    textStyle.color: Color.Gray
+                }
             }
-            Label {
-                text: snapTime + " - " + snapType
-                topMargin: 0
-                bottomMargin: 0
-                textStyle.fontSize: FontSize.PointValue
-                textFit.maxFontSizeValue: 4.0
-                textFit.minFontSizeValue: 4.0
-                textStyle.color: Color.Gray
-
-            }
+        }
+        Label {
+            verticalAlignment: VerticalAlignment.Top
+            horizontalAlignment: HorizontalAlignment.Right
+            text: snapView
+            textStyle.fontSize: FontSize.PointValue
+            textFit.maxFontSizeValue: 6.0
+            textFit.minFontSizeValue: 6.0
+            translationX: -10.0
+            textStyle.color: Color.Gray
         }
 
     }

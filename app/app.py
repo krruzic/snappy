@@ -1,4 +1,4 @@
-import pickle
+import pickle, os
 from .snappy import Snappy
 from operator import itemgetter
 import tart
@@ -55,6 +55,8 @@ class App(tart.Application):
 
     def __init__(self):
         super().__init__(debug=False)   # set True for some extra debug output
+        if not os.path.exists('data'):
+            os.makedirs('data')
         self.settings = {
             'username': '',
             'password': '',
@@ -67,12 +69,6 @@ class App(tart.Application):
     def onCheckLogin(self):
         print("Checking login")
         tart.send('loginChecked', login=self.settings['login'])
-
-    def testEmpty(self, dictionary,key):
-        if key in dictionary:
-            if dictionary[key]:
-                return dictionary[ey]
-        return ''
 
     def onUiReady(self):
         self.onCheckLogin()
@@ -103,12 +99,15 @@ class App(tart.Application):
     def onParseFeed(self, snaps):
         print("Parsing snaps...")
         for snap in snaps:
-            #snap['media'] = ''
-            print(snap)
+            if 'media' not in snap:
+                snap['media'] = ''
+            if snap['countdown'] != '':
+                snap['countdown'] = str(snap['countdown']) + ' secs'
+            print("MEDIA TYPE NUMBER", snap['media_type'])
             snap['time'] = self.prettyDate(snap['sent'] // 1000)
-            if snap['media_type'] == '0':
-                snap['media'] = 'image'
-            elif snap['media_type'] in ['1', '2']:
+            if snap['media_type'] == 0:
+                snap['media'] = 'picture'
+            elif snap['media_type'] in [1, 2]:
                 snap['media'] = 'video'
             if snap['recipient'] == '': # Snap recieved
                 snap['type'] = 'Recieved' # recieved == 1
@@ -117,10 +116,19 @@ class App(tart.Application):
             if snap['media_type'] != '':
                 if int(snap['media_type']) >= 3: # Notifications
                     snap['type'] = 'Notification' # notif == 3
-            print("MEDIA " + snap['media'])
 
         for result in sorted(snaps, key=itemgetter('type')):
             tart.send('snapsReceived', snap=result)
+
+    def onRequestImage(self, source):
+        data = self.session.getMedia(source)
+        imageURI = os.getcwd() + '/data/' + source + '.jpeg'
+        if data != None:
+            f = open('data/' + source + '.jpeg', 'wb')
+            f.write(data)
+            print("image written")
+            f.close()
+            tart.send('snapData', imageSource=imageURI)
 
     def onSaveSettings(self, settings):
         self.settings.update(settings)

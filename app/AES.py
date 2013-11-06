@@ -40,8 +40,8 @@ class AES:
  
  
  
-def new(key, mode):
-	return AES(key, mode)
+	def new(key, mode):
+		return AES(key, mode)
  
  
 def _test():

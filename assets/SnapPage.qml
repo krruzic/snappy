@@ -2,6 +2,12 @@ import bb.cascades 1.0
 import "tart.js" as Tart
 
 NavigationPane {
+    id: nav
+    
+    onPopTransitionEnded: {
+        page.destroy();
+        Application.menuEnabled = ! Application.menuEnabled;
+    }
     Page {
         id: snapPage
         onCreationCompleted: {
@@ -11,21 +17,28 @@ NavigationPane {
             console.log("LOGIN CHECKED!!")
             if (data.login == 'true')
                 Tart.send('requestFeed');
-            else 
+            else
                 loginSheet.open();
         }
 
         function onSnapsReceived(data) {
             activity.visible = false;
-            console.log("SNAP STATUS" + data.snap['media'])
             snapModel.append({ // Append an item with the necessary info
                     type: 'item', //+ String(currType), // Allows easy appending of different items
                     snapStatus: data.snap['media'],
                     snapTime: data.snap['time'],
                     snapType: data.snap['type'],
                     snapUser: data.snap['user'],
-                    snapURL: data.snap['url']
+                    snapURL: data.snap['url'],
+                    snapView: data.snap['countdown']
                 });
+        }
+
+        function onSnapData(data) {
+            console.log('Snap downloaded. Snap image ' + data.imageSource);
+            var page = detailsPage.createObject();
+            nav.push(page);
+            page.imageSource = data.imageSource;
         }
 
         titleBar: SnappyTitleBar {
@@ -57,10 +70,17 @@ NavigationPane {
                 horizontalAlignment: HorizontalAlignment.Center
                 verticalAlignment: VerticalAlignment.Center
             }
-            
+
             ListView {
                 dataModel: ArrayDataModel {
                     id: snapModel
+                }
+                onTriggered: {
+                    var selectedItem = dataModel.data(indexPath);
+
+                    Tart.send('requestImage', {
+                            source: selectedItem.snapURL
+                        });
                 }
                 function itemType(data, indexPath) {
                     return data.type
@@ -75,6 +95,7 @@ NavigationPane {
                             snapType: ListItemData.snapType
                             snapUser: ListItemData.snapUser
                             snapURL: ListItemData.snapURL // URL the snap resides in (fetch this onTriggered)
+                            snapView: ListItemData.snapView
                         }
                     }
                 ]
@@ -84,6 +105,10 @@ NavigationPane {
     attachedObjects: [
         LoginSheet {
             id: loginSheet
+        },
+        ComponentDefinition {
+                id: detailsPage
+                source: "DetailsPage.qml"
         }
     ]
 }
