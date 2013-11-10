@@ -4,6 +4,7 @@ import json, base64, os, random
 import urllib.parse, requests
 import time, base64
 import logging
+import tart
 
 
 
@@ -56,10 +57,10 @@ class Snappy(object):
     _headers = {
         #'Content-Type': 'application/octet-stream',
         'user-agent': 'Snapchat/5.0.1 CFNetwork/609.1.4 Darwin/13.0.0',
-        'version': '5.0.1'
+        'version': '6.0.1'
     }
 
-    VERSION = '5.0.1'
+    VERSION = '6.0.1'
     # authenticated.
     authenticated = False
     authToken = ""
@@ -84,7 +85,6 @@ class Snappy(object):
             self.authToken = authToken
             self.authenticated = 'true'
 
-# lesbian amputees rubbing nubs
 
     def getTime(self, rounded=True):
         if (rounded):
@@ -108,7 +108,7 @@ class Snappy(object):
 
     def _get_crypto(self):
         '''
-        Load up a local instance of the pycrypto cipher library.
+        Load up a local instance of the aes.py cipher library.
         '''
 
         if self._crypto is None:
@@ -174,8 +174,12 @@ class Snappy(object):
             payload = requests.post(url, data=data, files=files, headers=self._headers)
         else:
             payload = requests.post(url, data=data, headers=self._headers)
-        #print(payload.content)
-        return payload
+        print(payload.status_code)
+        if payload.status_code != 200:
+            print("sending data failed!")
+            raise Exception
+        else:
+            return payload
 
     def login(self, username, password):
         '''
@@ -191,14 +195,14 @@ class Snappy(object):
             timestamp])
         result = result.json()
         if result and result.get('auth_token'):
+            print(result['auth_token'])
             # successful login, set the auth token.
             self.authenticated = 'true'
             self.authToken = result['auth_token']
             self.username = username
-            #self.settings[''] 'true'
+            self.password = password
         else:
             self.authenticated = 'false'
-
 
 
     def logout(self):
@@ -219,21 +223,27 @@ class Snappy(object):
         #     return False
 
         timestamp = self.getTime()
-        result = self.sendData('/updates',
-            {'timestamp': timestamp,
-            'username': self.username,
-            'update_timestamp': since},
-            [self.authToken,
-            timestamp])
-        print(result.content)
-        result = result.json()
-        #print(result)
-        if result and result.get('auth_token'):
-            # successful login, set the auth token.
-            self.authenticated = True
-            self.authToken = result['auth_token']
+        try:
+            result = self.sendData('/updates',
+                {'timestamp': timestamp,
+                'username': self.username,
+                'update_timestamp': since},
+                [self.authToken,
+                timestamp])
+            print(result.content)
+            result = result.json()
+            return result
 
-        return result
+        except Exception:
+            print("Token expired, relogging")
+            tart.send('tokenExpired')
+
+        #print(result)
+        # if result and result.get('auth_token'):
+        #     # successful login, set the auth token.
+        #     self.authenticated = True
+        #     self.authToken = result['auth_token']
+
 
     def getSnaps(self, since=0):
         updates = self.getUpdates()
@@ -241,6 +251,7 @@ class Snappy(object):
         if not updates:
             return False
 
+        print("Snaps exist!")
         snaps = []
         for item in updates['snaps']:
             if 'm' in item:

@@ -11,6 +11,9 @@ TabbedPane {
         Tart.send('uiReady');
     
     }
+    function onTokenExpired() {
+        Tart.send('login')
+    }
     Tab {
         SnapPage {
             

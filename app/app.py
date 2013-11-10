@@ -91,6 +91,7 @@ class App(tart.Application):
             self.session = Snappy(self.settings['username'], self.settings['password'], self.settings['authToken'])
 
         snaps = self.session.getSnaps()
+        print(type(snaps))
         if (snaps != False):
             self.onParseFeed(snaps)
         else:
@@ -102,7 +103,9 @@ class App(tart.Application):
             if 'media' not in snap:
                 snap['media'] = ''
             if snap['countdown'] != '':
-                snap['countdown'] = str(snap['countdown']) + ' secs'
+                snap['countdown'] = int(snap['countdown'])
+                if snap['countdown'] == 0:
+                    snap['countdown'] = 'viewed'
             print("MEDIA TYPE NUMBER", snap['media_type'])
             snap['time'] = self.prettyDate(snap['sent'] // 1000)
             if snap['media_type'] == 0:
@@ -112,7 +115,14 @@ class App(tart.Application):
             if snap['recipient'] == '': # Snap recieved
                 snap['type'] = 'Recieved' # recieved == 1
             else:
-                snap['type'] = 'Sent' # sent == 2
+                snap['user'] = snap['recipient']
+                print(snap['opened'])
+                if snap['opened'] == 1:
+                    snap['type'] = 'Opened' # sent == 2
+                    snap['media'] = 'sent'
+                else:
+                    snap['type'] = 'Sent' # sent == 2
+                    snap['media'] = 'sent'
             if snap['media_type'] != '':
                 if int(snap['media_type']) >= 3: # Notifications
                     snap['type'] = 'Notification' # notif == 3

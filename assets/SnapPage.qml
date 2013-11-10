@@ -41,11 +41,17 @@ NavigationPane {
             page.imageSource = data.imageSource;
         }
 
+//        function snapCountdown(item, start) {
+//            qtimer
+//        }
         titleBar: SnappyTitleBar {
             text: "Snappy"
         }
 
         Container {
+            background: background.imagePaint
+            topPadding: 30
+
             layout: DockLayout {
             }
             Container {
@@ -72,9 +78,13 @@ NavigationPane {
             }
 
             ListView {
+                leftPadding: 40
+                rightPadding: 40
                 dataModel: ArrayDataModel {
                     id: snapModel
                 }
+                preferredWidth: Infinity.MAX_VALUE
+
                 onTriggered: {
                     var selectedItem = dataModel.data(indexPath);
 
@@ -87,6 +97,7 @@ NavigationPane {
                 }
                 listItemComponents: [
                     ListItemComponent {
+                        
                         type: 'item'
                         SnapItem {
                             id: recievedItem
@@ -96,6 +107,7 @@ NavigationPane {
                             snapUser: ListItemData.snapUser
                             snapURL: ListItemData.snapURL // URL the snap resides in (fetch this onTriggered)
                             snapView: ListItemData.snapView
+                            //snapSelectable: ListItemData.snapSelectable
                         }
                     }
                 ]
@@ -109,6 +121,10 @@ NavigationPane {
         ComponentDefinition {
                 id: detailsPage
                 source: "DetailsPage.qml"
+        },
+        ImagePaintDefinition {
+            id: background
+            imageSource: "asset:///images/background.png"
         }
     ]
 }
