@@ -2,6 +2,7 @@ import pickle, os
 from .snappy import Snappy
 from operator import itemgetter
 import tart
+from tart import screenshot_handler
 #start app -> check whether the user has saved credentials. yes -> main screen with tiny spinner and cached data. no -> login page
 class App(tart.Application):
     SETTINGS_FILE = 'data/settings.state'
@@ -71,6 +72,7 @@ class App(tart.Application):
         tart.send('loginChecked', login=self.settings['login'])
 
     def onUiReady(self):
+        screenshot_handler.ScreenshotHandler(self.bps_dispatcher)
         self.onCheckLogin()
 
     def onLogin(self, username=None, password=None):
@@ -104,8 +106,6 @@ class App(tart.Application):
                 snap['media'] = ''
             if snap['countdown'] != '':
                 snap['countdown'] = int(snap['countdown'])
-                if snap['countdown'] == 0:
-                    snap['countdown'] = 'viewed'
             print("MEDIA TYPE NUMBER", snap['media_type'])
             snap['time'] = self.prettyDate(snap['sent'] // 1000)
             if snap['media_type'] == 0:

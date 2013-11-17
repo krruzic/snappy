@@ -9,7 +9,7 @@ Container {
     property string snapType: "picture"
     property string snapUser: "madk"
     property string snapURL: "invisible" // URL to the snap (not visible)
-    property string snapView: "3" // time you can view the snap for
+    property int snapView: 3 // time you can view the snap for
     property string snapSelectable: "true" // can you view this snap?
     attachedObjects: [
         ImagePaintDefinition {

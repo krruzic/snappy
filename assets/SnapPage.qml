@@ -3,7 +3,8 @@ import "tart.js" as Tart
 
 NavigationPane {
     id: nav
-    
+    property variant selectedItem: null
+    property int countDown: 0
     onPopTransitionEnded: {
         page.destroy();
         Application.menuEnabled = ! Application.menuEnabled;
@@ -37,8 +38,9 @@ NavigationPane {
         function onSnapData(data) {
             console.log('Snap downloaded. Snap image ' + data.imageSource);
             var page = detailsPage.createObject();
-            nav.push(page);
             page.imageSource = data.imageSource;
+            page.currentCount = countDown;
+            nav.push(page);
         }
 
 //        function snapCountdown(item, start) {
@@ -87,7 +89,7 @@ NavigationPane {
 
                 onTriggered: {
                     var selectedItem = dataModel.data(indexPath);
-
+                    countDown = parseInt(selectedItem.snapView)
                     Tart.send('requestImage', {
                             source: selectedItem.snapURL
                         });
