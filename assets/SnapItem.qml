@@ -1,9 +1,6 @@
 import bb.cascades 1.2
-Container {
-    //    dividerVisible: false
-    //    highlightAppearance: HighlightAppearance.None
-    preferredWidth: Infinity.MAX_VALUE
 
+Container {
     property string snapStatus: "picture"
     property string snapTime: "4 mins ago"
     property string snapType: "picture"
@@ -11,78 +8,71 @@ Container {
     property string snapURL: "invisible" // URL to the snap (not visible)
     property int snapView: 3 // time you can view the snap for
     property string snapSelectable: "true" // can you view this snap?
-    attachedObjects: [
-        ImagePaintDefinition {
-            imageSource: "asset:///images/item.amd"
-            id: background
-        }
-    ]
-    Container {
 
+    layout: DockLayout {
+    }
+    background: Color.create("#47ffffff")
+    Container {
         horizontalAlignment: HorizontalAlignment.Fill
-        layout: DockLayout {
+        verticalAlignment: VerticalAlignment.Top
+        layout: StackLayout {
+            orientation: LayoutOrientation.LeftToRight
         }
         Container {
-            layout: StackLayout {
-                orientation: LayoutOrientation.LeftToRight
-            }
+            //background: Color.Red
+            horizontalAlignment: HorizontalAlignment.Left
+            verticalAlignment: VerticalAlignment.Fill
+            rightMargin: 20
             ImageView {
-                horizontalAlignment: HorizontalAlignment.Left
-                rightMargin: 20
-                verticalAlignment: VerticalAlignment.Center
                 imageSource: "asset:///images/" + snapStatus + ".png"
             }
-
-            Container {
-                preferredWidth: Infinity.MAX_VALUE
-                leftMargin: 10
-                rightMargin: 0
-                layout: StackLayout {
-                }
-                horizontalAlignment: HorizontalAlignment.Fill
-                Label {
-                    preferredWidth: Infinity.MAX_VALUE
-                    textStyle.color: Color.Black
-                    
-                    verticalAlignment: VerticalAlignment.Top
-                    enabled: false
-                    textStyle.fontSize: FontSize.PointValue
-                    textFit.maxFontSizeValue: 10.0
-                    textFit.minFontSizeValue: 12.0
-                    text: snapUser
-                    topMargin: 0
-                    bottomMargin: 0
-                    horizontalAlignment: HorizontalAlignment.Fill
-                }
-                Label {
-                    preferredWidth: Infinity.MAX_VALUE
-
-                    verticalAlignment: VerticalAlignment.Bottom
-                    text: snapTime + " - " + snapType
-                    topMargin: 0
-                    bottomMargin: 0
-                    textStyle.fontSize: FontSize.PointValue
-                    textFit.maxFontSizeValue: 6.0
-                    textFit.minFontSizeValue: 6.0
-                    textStyle.color: Color.Black
-                    horizontalAlignment: HorizontalAlignment.Fill
-                }
+        }
+        Container {
+            verticalAlignment: VerticalAlignment.Fill
+//            background: Color.Blue
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: 3
             }
-
+            horizontalAlignment: HorizontalAlignment.Fill
+            Label {
+                textStyle.color: Color.Black
+                textStyle.fontWeight: FontWeight.Bold
+                textStyle.fontSize: FontSize.PointValue
+                textFit.maxFontSizeValue: 6.0
+                textFit.minFontSizeValue: 6.0
+                text: snapUser
+                topMargin: -10
+                bottomMargin: -10
+            }
+            Label {
+                text: snapTime + " - " + snapType
+                topMargin: -10
+                bottomMargin: -10
+                textStyle.fontSize: FontSize.PointValue
+                textFit.maxFontSizeValue: 6.0
+                textFit.minFontSizeValue: 6.0
+                textStyle.color: Color.Black
+            }
         }
-        Label {
-            textStyle.textAlign: TextAlign.Right
+        Container {
             horizontalAlignment: HorizontalAlignment.Right
-            text: snapView
-            textStyle.fontSize: FontSize.PointValue
-            textFit.maxFontSizeValue: 6.0
-            textFit.minFontSizeValue: 6.0
-            textStyle.color: Color.Black
-            translationX: -10
+            verticalAlignment: VerticalAlignment.Top
+            rightPadding: 10
+            layout: DockLayout {
+            }
+            Label {
+                verticalAlignment: VerticalAlignment.Top
+                horizontalAlignment: HorizontalAlignment.Right
+                textStyle.textAlign: TextAlign.Right
+                text: snapView
+                textStyle.fontSize: FontSize.PointValue
+                textFit.maxFontSizeValue: 6.0
+                textFit.minFontSizeValue: 6.0
+                textStyle.color: Color.Black
+            }
         }
-        bottomPadding: 10
     }
     Divider {
+        verticalAlignment: VerticalAlignment.Bottom
     }
-
 }

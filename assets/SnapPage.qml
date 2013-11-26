@@ -43,18 +43,22 @@ NavigationPane {
             nav.push(page);
         }
 
-//        function snapCountdown(item, start) {
-//            qtimer
-//        }
+        //        function snapCountdown(item, start) {
+        //            qtimer
+        //        }
         titleBar: SnappyTitleBar {
             text: "Snappy"
         }
 
         Container {
             background: background.imagePaint
-            topPadding: 30
+            topPadding: 10
+            bottomPadding: 15
+            Container {
 
-            layout: DockLayout {
+                layout: DockLayout {
+                }
+
             }
             Container {
                 visible: false
@@ -99,7 +103,7 @@ NavigationPane {
                 }
                 listItemComponents: [
                     ListItemComponent {
-                        
+
                         type: 'item'
                         SnapItem {
                             id: recievedItem
@@ -113,7 +117,21 @@ NavigationPane {
                         }
                     }
                 ]
+
             }
+            ImageButton {
+                maxHeight: 100
+                maxWidth: 100
+                horizontalAlignment: HorizontalAlignment.Center
+                verticalAlignment: VerticalAlignment.Bottom
+                defaultImageSource: "asset:///images/cam.png"
+                pressedImageSource: "asset:///images/cam.png"
+                onClicked: {
+                    var page = cameraPage.createObject();
+                    nav.push(page);
+                }
+            }
+
         }
     }
     attachedObjects: [
@@ -121,8 +139,16 @@ NavigationPane {
             id: loginSheet
         },
         ComponentDefinition {
-                id: detailsPage
-                source: "DetailsPage.qml"
+            id: detailsPage
+            source: "DetailsPage.qml"
+        },
+        ComponentDefinition {
+            id: cameraPage
+            source: "CameraPage.qml"
+        },
+        ComponentDefinition {
+            id: sendPage
+            source: "SendPage.qml"
         },
         ImagePaintDefinition {
             id: background

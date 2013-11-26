@@ -140,6 +140,26 @@ class App(tart.Application):
             f.close()
             tart.send('snapData', imageSource=imageURI)
 
+    def onShrinkImage(self, image, res):
+        print(res)
+        THUMBNAIL_CMD = '/usr/bin/img_thumbnail {src} {dest} {x} {y}'
+        cmd = THUMBNAIL_CMD.format(src=image, dest=image, x=res[0], y=res[1])
+        os.system(cmd)
+
+    def onSendImage(self, image, users, time=3):
+
+        mediaID = self.session.upload(0, image)
+        if mediaID != False:
+            res = self.session.send(mediaID, users, time)
+        else:
+            return
+        print(res)
+
+    def onGetFriends(self):
+        friends = self.session.getFriends()
+        for friend in friends:
+            tart.send('friends', name=friend['name'])
+
     def onSaveSettings(self, settings):
         self.settings.update(settings)
         self.save_data(self.settings, self.SETTINGS_FILE)
