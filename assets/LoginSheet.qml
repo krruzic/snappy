@@ -11,7 +11,6 @@ Sheet {
         console.log(data.value);
         if (data.value == 'true') {
             loginSheet.close();
-            Tart.send('requestFeed');
         } if (data.value == 'false') {
             activity.visible = false;
             errorLabel.opacity = 1;

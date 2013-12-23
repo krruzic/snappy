@@ -66,6 +66,22 @@ class App(tart.Application):
         }
         self.restore_data(self.settings, self.SETTINGS_FILE)
         print("restored: ", self.settings)
+        if (self.settings["login"]):
+            self.onRequestFeed()
+
+    def onAuth(self, username=None, password=None):
+        if username == None:
+            username = self.settings['username']
+            password = self.settings['password']
+        self.session = Snappy(username, password)
+
+        if self.settings['login']: # if login success
+            self.settings['authToken'] = self.session.authToken
+
+        tart.send('loginResult', value=self.settings['login'])
+        self.onSaveSettings(self.settings)
+
+
 
     def onCheckLogin(self):
         print("Checking login")
@@ -76,37 +92,27 @@ class App(tart.Application):
         self.onCheckLogin()
 
     def onLogin(self, username=None, password=None):
+        # when we pass an auth token we just set up a Snappy instance (no request made)
+        self.session = Snappy(self.settings['username'], self.settings['password'], self.settings['authToken'])
+        self.onRequestFeed() # now we request the feed
 
-        self.settings['username'] = username
-        self.settings['password'] = password
-        self.session = Snappy(username, password)
-
-        self.settings['login'] = self.session.authenticated
-        if self.settings['login']:
-            self.settings['authToken'] = self.session.authToken
-        tart.send('loginResult', value=self.settings['login'])
-        self.onSaveSettings(self.settings)
 
     def onRequestFeed(self):
-        if self.session == None:
-            print("Starting Session")
-            self.session = Snappy(self.settings['username'], self.settings['password'], self.settings['authToken'])
-
         snaps = self.session.getSnaps()
-        print(type(snaps))
         if (snaps != False):
             self.onParseFeed(snaps)
         else:
-            print("No new snaps")
+            print("Token expired")
+            self.onAuth()
 
     def onParseFeed(self, snaps):
         print("Parsing snaps...")
         for snap in snaps:
+
             if 'media' not in snap:
                 snap['media'] = ''
             if snap['countdown'] != '':
                 snap['countdown'] = int(snap['countdown'])
-            print("MEDIA TYPE NUMBER", snap['media_type'])
             snap['time'] = self.prettyDate(snap['sent'] // 1000)
             if snap['media_type'] == 0:
                 snap['media'] = 'picture'
@@ -116,7 +122,7 @@ class App(tart.Application):
                 snap['type'] = 'Recieved' # recieved == 1
             else:
                 snap['user'] = snap['recipient']
-                print(snap['opened'])
+                # print(snap['opened'])
                 if snap['opened'] == 1:
                     snap['type'] = 'Opened' # sent == 2
                     snap['media'] = 'sent'

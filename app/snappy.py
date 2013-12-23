@@ -57,10 +57,10 @@ class Snappy(object):
     _headers = {
         #'Content-Type': 'application/octet-stream',
         'user-agent': 'Snapchat/5.0.1 CFNetwork/609.1.4 Darwin/13.0.0',
-        'version': '6.0.1'
+        'version': '5.0.1'
     }
 
-    VERSION = '6.0.1'
+    VERSION = '5.0.1'
     # authenticated.
     authenticated = False
     authToken = ""
@@ -136,6 +136,10 @@ class Snappy(object):
         pad_count = blocksize - len(data)    % blocksize
         return data + (chr(pad_count) * pad_count).encode('utf-8')
 
+    def pkcs5_pad(self, data, blocksize=16):
+        pad_count = blocksize - len(data)    % blocksize
+        return data + (chr(pad_count) * pad_count).encode('utf-8')
+
 
     def hash(self, first, second):
         '''
@@ -173,6 +177,7 @@ class Snappy(object):
         if files != None:
             payload = requests.post(url, data=data, files=files, headers=self._headers)
         else:
+            print(url, "\n", data, "\n", self._headers)
             payload = requests.post(url, data=data, headers=self._headers)
         print(payload.status_code)
         if payload.status_code != 200:
@@ -209,9 +214,8 @@ class Snappy(object):
         if self.authenticated != 'true':
             return False
 
-        timestamp = self.getTime()
         result = self.sendData('/logout',
-            {'timestamp': timestamp,
+            {'timestamp': self.getTime(),
             'username': self.username},
             [self.authToken,
             timestamp])
@@ -219,11 +223,8 @@ class Snappy(object):
         return result is None
 
     def getUpdates(self, since=0):
-        # if not self.authenticated:
-        #     return False
-
-        timestamp = self.getTime()
         try:
+            timestamp = self.getTime()
             result = self.sendData('/updates',
                 {'timestamp': timestamp,
                 'username': self.username,
@@ -236,7 +237,8 @@ class Snappy(object):
 
         except Exception:
             print("Token expired, relogging")
-            tart.send('tokenExpired')
+            return None
+            # tart.send('tokenExpired')
 
         #print(result)
         # if result and result.get('auth_token'):
@@ -254,8 +256,8 @@ class Snappy(object):
         print("Snaps exist!")
         snaps = []
         for item in updates['snaps']:
-            if 'm' in item:
-                print("raw media", item['m'])
+            # if 'm' in item:
+            #     print("raw media", item['m'])
             snap = {
             'url': item['id'],
             'media_id': self.testEmpty(item, 'c_id'),
@@ -268,6 +270,7 @@ class Snappy(object):
             'sent': item['sts'],
             'opened': item['ts']
             }
+            print(snap, "\n")
             snaps.append(snap)
 
         return snaps
@@ -428,93 +431,3 @@ class Snappy(object):
             [self.authToken,
             timestamp])
         return result
-
-    # def _is_blob(self, header):
-    #     '''
-    #     Determine if the passed-in string is actually a snapchat blob
-    #     '''
-    #     is_jpeg = header[0] == chr(00) and header[1] == chr(00)
-    #     is_mp4 = header[0] == chr(0xFF) and header[1] == chr(0xD8)
-
-    #     if is_jpeg or is_mp4:
-    #         return True
-    #     else:
-    #         # unknown or encrypted blob.
-    #         return False
-
-    # def _request(self, url, response_type=None, **params):
-    #     '''
-    #     Perform a snapchat api request.
-    #     '''
-    #     if response_type is None:
-    #         response_type = self.JSON
-
-    #     auth_token = self.authToken or self.STATIC_TOKEN
-    #     timestamp = round(time.time() * 1000)
-
-    #     request_token = self._generate_request_token(auth_token=auth_token,
-    #                                                  timestamp=timestamp)
-
-    #     # attach additional params
-    #     params['req_token'] = request_token
-    #     params['version'] = self._headers['version']
-    #     params['timestamp'] = timestamp
-
-    #     # build the url
-    #     url = self.API_HOST + url
-
-    #     # make the request.
-    #     try:            # f = open('snapAuth', 'w')
-    #         # f.write()
-
-    #         request = urllib2.urlopen(urllib2.Request(url=url,
-    #                                               data=urlencode(params),
-    #                                               headers=self._headers))
-    #     except Exception:
-    #         return "ERR", "ERROR"
-    #     payload = request.read()
-
-    #     if response_type is self.BLOB:
-    #         # decode blob response.
-    #         if self._is_blob(payload) is False:
-    #             # the blob is encrypted
-    #             payload = self._decrypt(payload)
-    #     elif response_type is self.JSON:
-    #         # json response, decode it.
-    #         payload = json.loads(payload)
-
-    #     url = self.API_HOST + self.FRIEND_URI
-    #     request = urllib2.urlopen(urllib2.Request(url=url,
-    #                                           data=urlencode(params),
-    #                                           headers=self._headers))
-
-
-    #     pay = request.read()
-    #     print pay
-
-    #     return request.getcode(), payload
-
-# a = Snappy('bbtest', '278lban')
-# a.getMedia('30674381287168270r')
-# # fr = a.addFriends(['ughttt', 'love', 'friend'])
-# # fr = a.getFriends()
-# # print(fr)
-# # f = open(os.getcwd() + '/908967380595753700r.jpeg', 'rb')
-# # data = f.read()
-# # pic = a.upload(a.MEDIA_IMAGE, '/night.jpg')
-# # while(1):
-# # a.send(pic, ['ughttt'])
-# p = a.getSnaps()
-# for i in p:
-#     print(i)
-#     print()
-# # for i in res:
-# #     h = a.getMedia(i['id'])
-# #     print(h)
-# #     if h != None:
-# #         # h = base64.b64encode(h)
-# #         # h = base64.decodestring(h)
-# #         f = open(i['id'] + '.jpeg', 'wb')
-# #         f.write(h)
-# #         f.close()
-
