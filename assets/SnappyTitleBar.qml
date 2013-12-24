@@ -1,7 +1,6 @@
 import bb.cascades 1.2
 
 TitleBar {
-    property alias text: pageTitle.text
     kind: TitleBarKind.FreeForm
     scrollBehavior: TitleBarScrollBehavior.Sticky
 
@@ -15,7 +14,7 @@ TitleBar {
                 verticalAlignment: VerticalAlignment.Center
                 Label {
                     id: pageTitle
-                    text: ""
+                    text: "Snappy"
                     horizontalAlignment: HorizontalAlignment.Center
                     verticalAlignment: VerticalAlignment.Center
                     textStyle.fontWeight: FontWeight.Default
@@ -23,7 +22,7 @@ TitleBar {
                     textStyle.color: Color.White
                     textStyle.fontStyle: FontStyle.Italic
                     textStyle.fontSizeValue: 12
-
+                    textStyle.textAlign: TextAlign.Center
                 }
             }
 

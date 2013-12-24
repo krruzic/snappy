@@ -4,6 +4,7 @@ from operator import itemgetter
 import tart
 from tart import screenshot_handler
 #start app -> check whether the user has saved credentials. yes -> main screen with tiny spinner and cached data. no -> login page
+
 class App(tart.Application):
     SETTINGS_FILE = 'data/settings.state'
     session = None
@@ -69,19 +70,17 @@ class App(tart.Application):
         if (self.settings["login"]):
             self.onRequestFeed()
 
-    def onAuth(self, username=None, password=None):
-        if username == None:
-            username = self.settings['username']
-            password = self.settings['password']
-        self.session = Snappy(username, password)
+    # def onAuth(self, username=None, password=None):
+    #     if username == None:
+    #         username = self.settings['username']
+    #         password = self.settings['password']
+    #     self.session = Snappy(username, password)
 
-        if self.settings['login']: # if login success
-            self.settings['authToken'] = self.session.authToken
+    #     if self.settings['login']: # if login success
+    #         self.settings['authToken'] = self.session.authToken
 
-        tart.send('loginResult', value=self.settings['login'])
-        self.onSaveSettings(self.settings)
-
-
+    #     tart.send('loginResult', value=self.settings['login'])
+    #     self.onSaveSettings(self.settings)
 
     def onCheckLogin(self):
         print("Checking login")
@@ -92,23 +91,43 @@ class App(tart.Application):
         self.onCheckLogin()
 
     def onLogin(self, username=None, password=None):
-        # when we pass an auth token we just set up a Snappy instance (no request made)
-        self.session = Snappy(self.settings['username'], self.settings['password'], self.settings['authToken'])
-        self.onRequestFeed() # now we request the feed
+        if username == None:
+            self.session = Snappy(self.settings['username'], self.settings['password'], self.settings['authToken'])
+        else:
+            self.session = Snappy(username, password)
+        if self.session.authenticated:
+            self.onRequestFeed() # now we request the feed
+            self.settings['username'] = username
+            self.settings['password'] = password
+            self.settings['authToken'] = self.session.authToken
+            self.settings['login'] = 'true'
+        tart.send('loginResult', value=self.session.authenticated)
 
 
     def onRequestFeed(self):
-        snaps = self.session.getSnaps()
-        if (snaps != False):
-            self.onParseFeed(snaps)
-        else:
+        try:
+            snaps = self.session.getSnaps()
+            if (snaps != False):
+                self.onParseFeed(snaps)
+        except Exception:
             print("Token expired")
-            self.onAuth()
+            # tart.send('tokenExpired')
 
     def onParseFeed(self, snaps):
         print("Parsing snaps...")
-        for snap in snaps:
+        # three item types:
+            # recieved content
+                # read
+                # unread
+            # sent content
+                # sent
+                # delivered
+                # opened
+                # screenshot attempted
+            # friend requests
+                # add as a friend
 
+        for snap in snaps:
             if 'media' not in snap:
                 snap['media'] = ''
             if snap['countdown'] != '':
@@ -147,7 +166,6 @@ class App(tart.Application):
             tart.send('snapData', imageSource=imageURI)
 
     def onShrinkImage(self, image, res):
-        print(res)
         THUMBNAIL_CMD = '/usr/bin/img_thumbnail {src} {dest} {x} {y}'
         cmd = THUMBNAIL_CMD.format(src=image, dest=image, x=res[0], y=res[1])
         os.system(cmd)

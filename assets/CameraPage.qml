@@ -29,18 +29,28 @@ Page {
                 getSettings(cameraSettings)
                 cameraSettings.focusMode = CameraFocusMode.ContinuousAuto
                 cameraSettings.shootingMode = CameraShootingMode.Stabilization
-                cameraSettings.captureResolution = camera.supportedCaptureResolutions(cameraSettings.cameraMode)[1]
+                cameraSettings.flashMode = CameraFlashMode.Off
+                cameraSettings.captureResolution = camera.supportedCaptureResolutions(0)[1]
                 applySettings(cameraSettings)
 
                 // Start the view finder as it is needed by the barcode detector
                 camera.startViewfinder();
             }
-
+            onTouch: {
+            }
             onViewfinderStarted: {
-                // Setup the barcode detector with the camera object now
+            }
+            onViewfinderStopped: {
             }
             onPhotoCaptured: {
+                
             }
+            onViewfinderStartFailed: {
+                console.log("Starting viewfinder failed with error:" + error)
+            }
+//            function rotateImg() {
+//                Image.
+//            }
             onPhotoSaved: {
                 Tart.send('shrinkImage', {
                         image: fileName,
@@ -61,7 +71,6 @@ Page {
             defaultImageSource: "asset:///images/timer.amd"
             onClicked: {
                 camera.capturePhoto();
-                console.log("camera resolutions allowed" + camera.supportedCaptureResolutions(cameraSettings.cameraMode)[1]);
 
             }
         }

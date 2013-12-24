@@ -56,11 +56,11 @@ class Snappy(object):
     # static headers for each and every request
     _headers = {
         #'Content-Type': 'application/octet-stream',
-        'user-agent': 'Snapchat/5.0.1 CFNetwork/609.1.4 Darwin/13.0.0',
-        'version': '5.0.1'
+        'user-agent': 'Snapchat/6.0.1 CFNetwork/609.1.4 Darwin/13.0.0',
+        'version': '6.0.1'
     }
 
-    VERSION = '5.0.1'
+    VERSION = '6.0.1'
     # authenticated.
     authenticated = False
     authToken = ""
@@ -78,6 +78,7 @@ class Snappy(object):
         self.authenticated = 'false'
         self.username = username
         self.password = password
+        self.login(username, password)
 
         if (authToken == ''):
             self.login(username, password)
@@ -136,11 +137,6 @@ class Snappy(object):
         pad_count = blocksize - len(data)    % blocksize
         return data + (chr(pad_count) * pad_count).encode('utf-8')
 
-    def pkcs5_pad(self, data, blocksize=16):
-        pad_count = blocksize - len(data)    % blocksize
-        return data + (chr(pad_count) * pad_count).encode('utf-8')
-
-
     def hash(self, first, second):
         '''
         Given an auth_token and a timestamp, generate a snapchat request token
@@ -169,7 +165,6 @@ class Snappy(object):
 
 
     def sendData(self, endpoint, data, params, files=None):
-        #print("SENDING")
 
         data['req_token'] = self.hash(params[0], params[1])
         data['version'] = self.VERSION
@@ -177,7 +172,6 @@ class Snappy(object):
         if files != None:
             payload = requests.post(url, data=data, files=files, headers=self._headers)
         else:
-            print(url, "\n", data, "\n", self._headers)
             payload = requests.post(url, data=data, headers=self._headers)
         print(payload.status_code)
         if payload.status_code != 200:
@@ -192,6 +186,7 @@ class Snappy(object):
         '''
 
         timestamp = self.getTime()
+        print(username)
         result = self.sendData('/login',
             {'username': username,
             'password': password,
@@ -199,6 +194,7 @@ class Snappy(object):
             [self.STATIC_TOKEN,
             timestamp])
         result = result.json()
+        print(result)
         if result and result.get('auth_token'):
             print(result['auth_token'])
             # successful login, set the auth token.
@@ -222,30 +218,18 @@ class Snappy(object):
 
         return result is None
 
+
     def getUpdates(self, since=0):
-        try:
-            timestamp = self.getTime()
-            result = self.sendData('/updates',
-                {'timestamp': timestamp,
-                'username': self.username,
-                'update_timestamp': since},
-                [self.authToken,
-                timestamp])
-            print(result.content)
-            result = result.json()
-            return result
-
-        except Exception:
-            print("Token expired, relogging")
-            return None
-            # tart.send('tokenExpired')
-
-        #print(result)
-        # if result and result.get('auth_token'):
-        #     # successful login, set the auth token.
-        #     self.authenticated = True
-        #     self.authToken = result['auth_token']
-
+        timestamp = self.getTime()
+        result = self.sendData('/updates',
+            {'timestamp': timestamp,
+            'username': self.username,
+            'update_timestamp': since},
+            [self.authToken,
+            timestamp])
+        print(result.content)
+        result = result.json()
+        return result
 
     def getSnaps(self, since=0):
         updates = self.getUpdates()

@@ -17,7 +17,7 @@ NavigationPane {
         function onLoginChecked(data) {
             console.log("LOGIN CHECKED!!")
             if (data.login == 'true')
-                Tart.send('requestFeed');
+                Tart.send('login');
             else
                 loginSheet.open();
         }
@@ -25,7 +25,7 @@ NavigationPane {
         function onSnapsReceived(data) {
             activity.visible = false;
             snapModel.append({ // Append an item with the necessary info
-                    type: 'item', //+ String(currType), // Allows easy appending of different items
+                    type: 'item',  // Allows easy appending of different items
                     snapStatus: data.snap['media'],
                     snapTime: data.snap['time'],
                     snapType: data.snap['type'],
@@ -47,13 +47,10 @@ NavigationPane {
         //            qtimer
         //        }
         titleBar: SnappyTitleBar {
-            text: "Snappy"
         }
 
         Container {
             background: background.imagePaint
-            topPadding: 10
-            bottomPadding: 15
             Container {
 
                 layout: DockLayout {
@@ -84,8 +81,6 @@ NavigationPane {
             }
 
             ListView {
-                leftPadding: 40
-                rightPadding: 40
                 dataModel: ArrayDataModel {
                     id: snapModel
                 }
