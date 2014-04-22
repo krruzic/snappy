@@ -38,10 +38,6 @@ Page {
             topPadding: 20
             Container {
                 attachedObjects: [
-                    ImagePaintDefinition {
-                        id: timerBackground
-                        imageSource: "asset:///images/timer.amd"
-                    },
                     QTimer {
                         id: picTimer
                         // Specify a timeout interval of 1 second
@@ -61,16 +57,14 @@ Page {
                 ]
                 layout: DockLayout {
                 }
-                opacity: 0.7
-                background: timerBackground.imagePaint
                 minWidth: 100
                 minHeight: 100 //
-                Label {
-                    id: timerDisplay
-                    horizontalAlignment: HorizontalAlignment.Center
-                    verticalAlignment: VerticalAlignment.Center
+                ImageText {
                     text: currentCount
-                    textStyle.color: Color.White
+                    id: timerDisplay
+                    textX: 15
+                    textY: 15
+                    image: "asset:///images/timer.png"
                 }
             }
         }

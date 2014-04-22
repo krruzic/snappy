@@ -1,11 +1,10 @@
 import bb.cascades 1.2
 
 Container {
+    property string friend: "teamsnapchat"
+    property bool added: false
     horizontalAlignment: HorizontalAlignment.Fill
 
-    property string title: "Screenshot attempted!"
-    property string time: "4 minutes ago"
-    property string status: "screenshotH"
     Container {
         attachedObjects: [
             TextStyleDefinition {
@@ -16,10 +15,10 @@ Container {
         ]
         horizontalAlignment: HorizontalAlignment.Fill
         background: Color.create("#a2ffffff")
+        topPadding: 10
         layout: DockLayout {
 
         }
-        topPadding: 10
         Container {
             verticalAlignment: VerticalAlignment.Center
             horizontalAlignment: HorizontalAlignment.Center
@@ -39,7 +38,7 @@ Container {
                     textStyle.fontSize: FontSize.PointValue
                     textFit.maxFontSizeValue: 8.0
                     textFit.minFontSizeValue: 8.0
-                    text: title
+                    text: friend
                     topMargin: 0
                     bottomMargin: 0
                 }
@@ -50,13 +49,23 @@ Container {
                     textFit.maxFontSizeValue: 8.0
                     textFit.minFontSizeValue: 8.0
                     textStyle.base: lightStyle.style
-                    text: "    " + time
+                    text: "    Wants to add you as a friend!"
                 }
             }
             ImageButton {
-                defaultImageSource: "asset:///images/" + status + ".png"
-                pressedImageSource: defaultImageSource
+                id: addFriendButton
+                enabled: !added
+                defaultImageSource: "asset:///images/addFriend.png"
+                pressedImageSource: "asset:///images/addFriendP.png"
+                disabledImageSource: "asset:///images/addFriendD.png"
+                horizontalAlignment: HorizontalAlignment.Right
                 verticalAlignment: VerticalAlignment.Center
+                onClicked: {
+                    Tart.send('addFriend', {
+                            'user': friend
+                        });
+                    addFriendButton.enabled = false;
+                }
             }
         }
         Divider {

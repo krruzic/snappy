@@ -43,24 +43,29 @@ Page {
             onViewfinderStopped: {
             }
             onPhotoCaptured: {
-                
+
             }
             onViewfinderStartFailed: {
                 console.log("Starting viewfinder failed with error:" + error)
             }
-//            function rotateImg() {
-//                Image.
-//            }
+            //            function rotateImg() {
+            //                Image.
+            //            }
             onPhotoSaved: {
-                Tart.send('shrinkImage', {
-                        image: fileName,
-                        res: [ layout.layoutFrame.width, layout.layoutFrame.height ]
-                    })
+                Tart.send('checkImage', {
+                        image: fileName
+                    });
+//                Tart.send('shrinkImage', {
+//                        image: fileName,
+//                        res: [ layout.layoutFrame.width, layout.layoutFrame.height ]
+//                    });
+
+            }
+            function onRotated() {
                 var page = sendPage.createObject();
                 page.imageLocation = fileName;
-                nav.push(page);
+                nav.push(page); 
             }
-
         }
         ImageButton {
             horizontalAlignment: HorizontalAlignment.Center

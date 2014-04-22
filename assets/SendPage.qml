@@ -1,5 +1,5 @@
 import bb.cascades 1.2
-import "tart.js" as Tart
+//import "tart.js" as Tart
 Page {
     id: sendPage
     actionBarVisibility: ChromeVisibility.Hidden
@@ -34,56 +34,25 @@ Page {
                 user: data.name
             });
     }
+    titleBar: SnappyTitleBar {
+        text: "Friends"
+        b1.onClicked: {
+            
+        }
+    }
     Container {
         background: background.imagePaint
         attachedObjects: [
             ImagePaintDefinition {
                 id: background
-                imageSource: "asset:///images/background.png"
+                imageSource: "asset:///images/backgroundP.amd"
+                repeatPattern: RepeatPattern.XY
             }
         ]
-        Container {
-            maxHeight: 240
-            horizontalAlignment: HorizontalAlignment.Fill
-            layout: DockLayout {
-                // orientation: LayoutOrientation.LeftToRight
-            }
-            layoutProperties: StackLayoutProperties {
-                spaceQuota: 1
-            }
-            Container {
-                horizontalAlignment: HorizontalAlignment.Fill
-                layout: StackLayout {
-                    orientation: LayoutOrientation.LeftToRight
-                }
-                ImageView {
-                    maxWidth: 240
-                    imageSource: "asset:///images/city.png"
-                    scalingMethod: ScalingMethod.AspectFit
-                    horizontalAlignment: HorizontalAlignment.Left
-                    loadEffect: ImageViewLoadEffect.FadeZoom
-                }
-                ImageButton {
-                    defaultImageSource: "asset:///images/sendButton.png"
-                    maxWidth: 240
-                }
-                ImageButton {
-                    defaultImageSource: "asset:///images/editButton.png"
-                    maxWidth: 240
-                }
-            }
-        }
+
         Container {
             layoutProperties: StackLayoutProperties {
                 spaceQuota: 3
-            }
-            Label {
-                text: "SEND TO:"
-                textStyle.fontWeight: FontWeight.Bold
-                textStyle.fontSize: FontSize.PointValue
-                textFit.maxFontSizeValue: 10.0
-                textFit.minFontSizeValue: 10.0
-                textStyle.color: Color.Black
             }
             ListView {
                 dataModel: ArrayDataModel {
@@ -100,38 +69,7 @@ Page {
                 listItemComponents: [
                     ListItemComponent {
                         type: 'item'
-                        Container {
-                            background: Color.create("#47ffffff")
-                            layout: DockLayout {
-                            }
-                            minHeight: layoutT.layoutFrame.height
-                            minWidth: layoutT.layoutFrame.width
 
-                            Container {
-                                rightPadding: 20
-                                leftPadding: 20
-                                minHeight: 100
-                                layout: DockLayout {
-                                }
-                                horizontalAlignment: HorizontalAlignment.Fill
-                                Label {
-                                    horizontalAlignment: HorizontalAlignment.Left
-                                    verticalAlignment: VerticalAlignment.Center
-                                    id: user
-                                    text: ListItemData.user
-                                    textStyle.color: Color.Black
-                                }
-                                CheckBox {
-                                    horizontalAlignment: HorizontalAlignment.Right
-                                    verticalAlignment: VerticalAlignment.Center
-
-                                    id: checkBox
-                                }
-                                Divider {
-                                    verticalAlignment: VerticalAlignment.Bottom
-                                }
-                            }
-                        }
 
                     }
                 ]

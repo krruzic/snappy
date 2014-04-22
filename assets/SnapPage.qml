@@ -1,4 +1,4 @@
-import bb.cascades 1.0
+import bb.cascades 1.2
 import "tart.js" as Tart
 
 NavigationPane {
@@ -47,6 +47,9 @@ NavigationPane {
         //            qtimer
         //        }
         titleBar: SnappyTitleBar {
+            button1Visible: false
+            button2Visible: false
+            button3Image: "asset:///images/camButton.png"
         }
 
         Container {
@@ -98,10 +101,9 @@ NavigationPane {
                 }
                 listItemComponents: [
                     ListItemComponent {
-
-                        type: 'item'
+                        type: 'received'
                         SnapItem {
-                            id: recievedItem
+                            id: receivedItem
                             snapStatus: ListItemData.snapStatus
                             snapTime: ListItemData.snapTime
                             snapType: ListItemData.snapType
@@ -110,23 +112,26 @@ NavigationPane {
                             snapView: ListItemData.snapView
                             //snapSelectable: ListItemData.snapSelectable
                         }
+                    },
+                    ListItemComponent {
+                        type: 'request'
+                        FriendItem {
+                            id: requestItem
+                            friend: ListItemData.friend
+                            added: ListItemData.added
+                        }
+                    },
+                    ListItemComponent {
+                        type: 'sent'
+                        SentItem {
+                            status: ListItemData.status
+                            title: ListItemData.title
+                            time: ListItemData.time
+                        }
                     }
                 ]
 
             }
-            ImageButton {
-                maxHeight: 100
-                maxWidth: 100
-                horizontalAlignment: HorizontalAlignment.Center
-                verticalAlignment: VerticalAlignment.Bottom
-                defaultImageSource: "asset:///images/cam.png"
-                pressedImageSource: "asset:///images/cam.png"
-                onClicked: {
-                    var page = cameraPage.createObject();
-                    nav.push(page);
-                }
-            }
-
         }
     }
     attachedObjects: [
@@ -147,7 +152,8 @@ NavigationPane {
         },
         ImagePaintDefinition {
             id: background
-            imageSource: "asset:///images/background.png"
+            imageSource: "asset:///images/backgroundP.amd"
+            repeatPattern: RepeatPattern.XY
         }
     ]
 }

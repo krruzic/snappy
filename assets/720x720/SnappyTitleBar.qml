@@ -22,7 +22,7 @@ TitleBar {
             layout: StackLayout {
                 orientation: LayoutOrientation.LeftToRight
             }
-
+            
             Label {
                 id: name
                 horizontalAlignment: HorizontalAlignment.Center
@@ -35,7 +35,7 @@ TitleBar {
                 textStyle.fontSize: FontSize.PointValue
                 textFit.maxFontSizeValue: 10.0
                 textFit.minFontSizeValue: 10.0
-                textStyle.color: Color.create("#3376ff")
+                textStyle.color: Color.White//Color.create("#3376ff")
             }
             Container {
                 rightPadding: 20
@@ -48,68 +48,32 @@ TitleBar {
                     enabled: visible
                     defaultImageSource: "asset:///images/sendButton.png"
                     pressedImageSource: defaultImageSource
-                    maxWidth: 81
-                    maxHeight: 81
-                    minHeight: 81
-                    minWidth: 81
-
+                    maxWidth: 64
+                    maxHeight: 64
+                    minHeight: 64
+                    minWidth: 64
                 }
                 ImageButton {
                     id: button2
                     enabled: visible
                     defaultImageSource: "asset:///images/editButton.png"
                     pressedImageSource: defaultImageSource
-                    maxWidth: 81
-                    maxHeight: 81
-                    minHeight: 81
-                    minWidth: 81
+                    maxWidth: 64
+                    maxHeight: 64
+                    minHeight: 64
+                    minWidth: 64
                 }
                 ImageButton {
                     id: button3
                     enabled: visible
                     defaultImageSource: "asset:///images/shareButton.png"
                     pressedImageSource: defaultImageSource
-                    maxWidth: 81
-                    maxHeight: 81
-                    minHeight: 81
-                    minWidth: 81
+                    maxWidth: 64
+                    maxHeight: 64
+                    minHeight: 64
+                    minWidth: 64
                 }
             }
-            //        }
-            //        content: Container {
-            //            background: background.imagePaint
-            //            leftPadding: 20
-            //            rightPadding: 20
-            //            //topPadding: 10
-            //            Container {
-            //                layout: DockLayout {
-            //
-            //                }
-            //                horizontalAlignment: HorizontalAlignment.Fill
-            //                verticalAlignment: VerticalAlignment.Center
-            //                Label {
-            //                    id: pageTitle
-            //                    text: "Snappy"
-            //                    horizontalAlignment: HorizontalAlignment.Center
-            //                    verticalAlignment: VerticalAlignment.Center
-            //                    textStyle.fontWeight: FontWeight.Default
-            //                    textStyle.fontSize: FontSize.PointValue
-            //                    textStyle.color: Color.White
-            //                    textStyle.fontStyle: FontStyle.Italic
-            //                    textStyle.fontSizeValue: 12
-            //                    textStyle.textAlign: TextAlign.Center
-            //                }
-            //                ImageView {
-            //                    translationY: 5
-            //                    maxHeight: 81
-            //                    maxWidth: 81
-            //                    verticalAlignment: VerticalAlignment.Center
-            //                    horizontalAlignment: HorizontalAlignment.Right
-            //                    imageSource: "asset:///images/cam.png"
-            //                }
-            //            }
-            //
-            //        }
             attachedObjects: [
                 ImagePaintDefinition {
                     id: background

@@ -43,7 +43,7 @@ Page {
                     Label {
                         topMargin: 0
                         bottomMargin: 0
-                        textStyle.color: Color.create("#fe8515")
+                        textStyle.color: Color.create("#ff8c00")
                         horizontalAlignment: HorizontalAlignment.Right
                         text: "madk"
                         textStyle.textAlign: TextAlign.Right
@@ -97,7 +97,7 @@ Page {
                     Label {
                         topMargin: 0
                         bottomMargin: 0
-                        textStyle.color: Color.create("#fe8515")
+                        textStyle.color: Color.create("#ff8c00")
                         horizontalAlignment: HorizontalAlignment.Right
                         text: "madk"
                         textStyle.textAlign: TextAlign.Right
@@ -153,7 +153,7 @@ Page {
                     Label {
                         topMargin: 0
                         bottomMargin: 0
-                        textStyle.color: Color.create("#fe8515")
+                        textStyle.color: Color.create("#ff8c00")
                         horizontalAlignment: HorizontalAlignment.Right
                         text: "madk"
                         textStyle.textAlign: TextAlign.Right
